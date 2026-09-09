@@ -1,0 +1,211 @@
+@import "tailwindcss";
+@import "./App.css";
+
+@theme {
+  --color-brand-50: oklch(97% 0.02 275);
+  --color-brand-100: oklch(93% 0.05 275);
+  --color-brand-500: oklch(58% 0.21 275);
+  --color-brand-600: oklch(52% 0.21 275);
+  --color-brand-700: oklch(45% 0.19 275);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --radius-card: 1.25rem;
+  --shadow-soft: 0 10px 40px -12px oklch(45% 0.19 275 / 0.28);
+}
+
+/* ════════════════════════ KEYFRAME ANIMATIONS ════════════════════════ */
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes laserScan {
+  0% {
+    top: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    top: 95%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.8;
+  }
+}
+
+/* ════════════════════════ MODERN INTERACTION LAYER ════════════════════════ */
+@layer components {
+  /* ─── 1. HIỆU ỨNG BUTTON HIỆN ĐẠI (Sleek Micro-interactions) ─── */
+  .btn {
+    @apply inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl
+           px-4 text-sm font-semibold transition-all duration-250 ease-out
+           disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl
+           px-4 text-sm font-semibold transition-all duration-250 ease-out
+           disabled:cursor-not-allowed disabled:opacity-60
+           bg-brand-600 text-white hover:bg-brand-700 active:scale-[.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl
+           px-4 text-sm font-semibold transition-all duration-250 ease-out
+           disabled:cursor-not-allowed disabled:opacity-60
+           border border-slate-300 bg-white text-slate-700 hover:bg-slate-50
+           hover:border-slate-400 active:scale-[.98];
+  }
+
+  /* Nút Cyan Glow thời thượng (như Stripe / Vercel) */
+  .btn-cyan-glow {
+    @apply relative overflow-hidden inline-flex items-center justify-center gap-2 rounded-xl
+           bg-gradient-to-r from-cyan-600 to-teal-600 px-5 py-2.5 text-sm font-bold text-white
+           shadow-sm transition-all duration-300 ease-out cursor-pointer;
+  }
+  .btn-cyan-glow:hover {
+    @apply -translate-y-0.5 bg-gradient-to-r from-cyan-500 to-teal-500;
+    box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45), 0 8px 12px -6px rgba(13, 148, 136, 0.3);
+  }
+  .btn-cyan-glow:active {
+    @apply translate-y-0 scale-[0.98];
+  }
+
+  /* Nút Outline Pill hiện đại */
+  .btn-outline-modern {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-slate-200/90
+           bg-white/90 backdrop-blur px-5 py-3 text-sm font-bold text-slate-700 shadow-xs
+           transition-all duration-300 ease-out cursor-pointer;
+  }
+  .btn-outline-modern:hover {
+    @apply -translate-y-0.5 border-cyan-400/80 text-cyan-700 bg-white;
+    box-shadow: 0 8px 20px -6px rgba(6, 182, 212, 0.2);
+  }
+  .btn-outline-modern:active {
+    @apply translate-y-0 scale-[0.98];
+  }
+
+  /* ─── 2. HIỆU ỨNG TABS & NAVIGATION (Animated Line & Glow) ─── */
+  .nav-tab-modern {
+    @apply relative rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-600
+           transition-all duration-200 ease-out;
+  }
+  .nav-tab-modern::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    width: 0%;
+    height: 2px;
+    background: #0891b2;
+    border-radius: 9999px;
+    transform: translateX(-50%);
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .nav-tab-modern:hover {
+    @apply text-cyan-700 bg-cyan-50/50;
+  }
+  .nav-tab-modern:hover::after {
+    width: 60%;
+  }
+  .nav-tab-active {
+    @apply text-cyan-600 font-bold bg-cyan-50/70;
+  }
+  .nav-tab-active::after {
+    width: 80% !important;
+  }
+
+  /* ─── 3. HIỆU ỨNG CARD NỔI BẬT KHI HOVER (Card Hover Lift) ─── */
+  .card-hover-lift {
+    @apply relative transition-all duration-350 ease-out rounded-3xl border border-slate-200/80 bg-white;
+  }
+  .card-hover-lift:hover {
+    transform: translateY(-6px);
+    border-color: rgba(6, 182, 212, 0.4);
+    box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.08), 0 10px 20px -8px rgba(6, 182, 212, 0.15);
+  }
+
+  /* ─── 4. HIỆU ỨNG ZOOM ẢNH MƯỢT MÀ (Image Hover Zoom) ─── */
+  .img-container-zoom {
+    @apply relative overflow-hidden;
+  }
+  .img-container-zoom img {
+    @apply transition-transform duration-600 ease-out;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .img-container-zoom:hover img {
+    transform: scale(1.06);
+    filter: brightness(1.03);
+  }
+
+  /* ─── 5. HIỆU ỨNG FLOATING CHIP / BADGE (Bay lượn nhẹ) ─── */
+  .badge-floating {
+    animation: floatGentle 4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  /* ─── 6. SHIMMER LIGHT REFLECTION (Vệt sáng lướt qua) ─── */
+  .shimmer-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer-sweep::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.25),
+      transparent
+    );
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+  .shimmer-sweep:hover::before {
+    animation: shimmer 1s ease-in-out;
+  }
+
+  /* Standard Inputs & Card */
+  .input {
+    @apply h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm
+           outline-none transition-all duration-200 placeholder:text-slate-400
+           focus:border-cyan-500 focus:ring-4 focus:ring-cyan-100;
+  }
+
+  .card {
+    @apply w-full rounded-[--radius-card] border border-slate-200 bg-white p-6
+           shadow-[--shadow-soft] sm:p-8;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+}

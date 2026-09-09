@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { AuthLayout } from "../components/AuthLayout";
-import { OtpInput } from "../components/OtpInput";
-import { Alert } from "../components/Alert";
-import { Spinner } from "../components/Spinner";
+import { AuthLayout } from "../components/auth/AuthLayout";
+import { OtpInput } from "../components/auth/OtpInput";
+import { Alert } from "../components/ui/Alert";
+import { Spinner } from "../components/ui/Spinner";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
 import { useAuthStore } from "../store/auth.store";

@@ -1,4 +1,4 @@
-import { authApi } from "../api/auth.api";
+import { authApi } from "../../api/auth.api";
 
 export function OAuthButtons({ disabled }: { disabled?: boolean }) {
   const go = (p: "google" | "github") => {
