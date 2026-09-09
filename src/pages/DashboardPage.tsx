@@ -1,14 +1,69 @@
+import { useState, useEffect } from "react";
 import { useOutletContext, Link } from "react-router-dom";
 import shrimpHeroScannerImg from "../assets/shrimp_hero_scanner.jpg";
 import shrimpSampleImg from "../assets/shrimp_sample.jpg";
+import shrimpBlackTigerImg from "../assets/shrimp_black_tiger.jpg";
+import shrimpGiantPrawnImg from "../assets/shrimp_giant_prawn.jpg";
 import logoImg from "../assets/Logo.png";
 
 interface OutletContextType {
   openAnalysisModal: () => void;
 }
 
+const heroShrimpSlides = [
+  {
+    id: "vannamei",
+    name: "Tôm thẻ chân trắng",
+    scientificName: "Litopenaeus vannamei",
+    confidence: "96.8%",
+    statusBadge: "Đã nhận dạng",
+    specimenBadge: "Giống nuôi chủ lực",
+    size: "Size: 30 con/kg • Đạt chuẩn",
+    image: shrimpHeroScannerImg,
+    thumb: shrimpSampleImg,
+    icon: "🦐",
+  },
+  {
+    id: "monodon",
+    name: "Tôm sú",
+    scientificName: "Penaeus monodon",
+    confidence: "98.4%",
+    statusBadge: "Đã nhận dạng",
+    specimenBadge: "Tôm xuất khẩu giá trị cao",
+    size: "Size: 15 con/kg • Vân vằn rõ",
+    image: shrimpBlackTigerImg,
+    thumb: shrimpBlackTigerImg,
+    icon: "🐅",
+  },
+  {
+    id: "rosenbergii",
+    name: "Tôm càng xanh",
+    scientificName: "Macrobrachium rosenbergii",
+    confidence: "97.5%",
+    statusBadge: "Đã nhận dạng",
+    specimenBadge: "Đặc sản nước ngọt",
+    size: "Size: 10 con/kg • Càng xanh bóng",
+    image: shrimpGiantPrawnImg,
+    thumb: shrimpGiantPrawnImg,
+    icon: "🦞",
+  },
+];
+
 export default function DashboardPage() {
   const { openAnalysisModal } = useOutletContext<OutletContextType>();
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto rotate slides every 4 seconds unless user hovers
+  useEffect(() => {
+    if (isPaused) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % heroShrimpSlides.length);
+    }, 4200);
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const currentSlide = heroShrimpSlides[currentSlideIndex];
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -52,11 +107,11 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={openAnalysisModal}
-                  className="btn-cyan-glow shimmer-sweep rounded-full px-7 py-3.5 text-sm font-bold shadow-lg"
+                  className="btn-cyan-glow shimmer-sweep px-7 py-3.5 text-sm"
                 >
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-4 w-4 fill-none stroke-current stroke-2"
+                    className="h-5 w-5 fill-none stroke-current stroke-2"
                   >
                     <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 12v9m-4-4 4-4 4 4" />
                   </svg>
@@ -79,23 +134,39 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Right Visual: AI Vision Scanner Card */}
+            {/* Right Visual: AI Vision Scanner Rotating Card */}
             <div className="lg:col-span-6">
               <div className="relative mx-auto max-w-lg lg:max-w-none">
                 {/* Glowing Ambient Glow */}
                 <div className="absolute -inset-1.5 rounded-3xl bg-gradient-to-r from-cyan-400 to-sky-500 opacity-20 blur-xl" />
 
-                {/* Main Card with Hover Lift & Zoom */}
-                <div className="relative overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-3.5 shadow-2xl backdrop-blur card-hover-lift img-container-zoom">
-                  <div className="relative rounded-2xl overflow-hidden bg-slate-950 aspect-[4/3]">
-                    <img
-                      src={shrimpHeroScannerImg}
-                      alt="AI Vision Shrimp Scanner"
-                      className="h-full w-full object-cover"
-                    />
+                {/* Main Card with Hover Lift */}
+                <div
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                  className="relative overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-3.5 shadow-2xl backdrop-blur card-hover-lift group"
+                >
+                  <div className="relative rounded-2xl overflow-hidden bg-slate-950 aspect-[4/3] select-none">
+                    {/* Rotating Shrimp Slide Images */}
+                    {heroShrimpSlides.map((slide, idx) => (
+                      <div
+                        key={slide.id}
+                        className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                          idx === currentSlideIndex
+                            ? "opacity-100 scale-100 z-10"
+                            : "opacity-0 scale-105 pointer-events-none z-0"
+                        }`}
+                      >
+                        <img
+                          src={slide.image}
+                          alt={slide.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ))}
 
                     {/* Scanner Target Corners Reticle */}
-                    <div className="absolute inset-6 border-2 border-cyan-400/40 rounded-xl pointer-events-none">
+                    <div className="absolute inset-6 border-2 border-cyan-400/40 rounded-xl pointer-events-none z-20">
                       {/* Top-Left */}
                       <span className="absolute -top-1 -left-1 h-5 w-5 border-t-3 border-l-3 border-cyan-400" />
                       {/* Top-Right */}
@@ -105,25 +176,114 @@ export default function DashboardPage() {
                       {/* Bottom-Right */}
                       <span className="absolute -bottom-1 -right-1 h-5 w-5 border-b-3 border-r-3 border-cyan-400" />
                     </div>
+
+                    {/* Animated Scanning Laser Line */}
+                    <div className="animated-laser z-20" />
+
+                    {/* Telemetry Footer Overlay on Image */}
+                    <div className="absolute bottom-3 inset-x-3 rounded-xl bg-slate-950/85 backdrop-blur-md px-3.5 py-2 border border-cyan-500/30 text-white text-xs flex items-center justify-between font-mono z-20">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                        <span className="text-cyan-300 font-bold">{currentSlide.scientificName}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                        <span>{currentSlide.size}</span>
+                        <span className="text-cyan-400 font-bold">
+                          {currentSlideIndex + 1}/{heroShrimpSlides.length}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Prev / Next Arrows */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentSlideIndex(
+                          (prev) => (prev - 1 + heroShrimpSlides.length) % heroShrimpSlides.length
+                        );
+                      }}
+                      aria-label="Giống tôm trước"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 z-30 grid h-8 w-8 place-items-center rounded-full bg-slate-950/60 text-white backdrop-blur-md hover:bg-cyan-600 hover:scale-110 transition shadow-lg cursor-pointer"
+                    >
+                      <svg className="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                        <polyline points="15 18 9 12 15 6" />
+                      </svg>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentSlideIndex((prev) => (prev + 1) % heroShrimpSlides.length);
+                      }}
+                      aria-label="Giống tôm tiếp theo"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 z-30 grid h-8 w-8 place-items-center rounded-full bg-slate-950/60 text-white backdrop-blur-md hover:bg-cyan-600 hover:scale-110 transition shadow-lg cursor-pointer"
+                    >
+                      <svg className="h-4 w-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+                    </button>
                   </div>
 
                   {/* Floating Result Badge at Top-Right (with gentle floating animation) */}
-                  <div className="absolute top-6 right-6 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-2.5 shadow-xl border border-slate-100 backdrop-blur badge-floating z-20">
+                  <div className="absolute top-6 right-6 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-2.5 shadow-xl border border-slate-100 backdrop-blur badge-floating z-30 transition-all duration-300">
                     <img
-                      src={shrimpSampleImg}
-                      alt="Thumbnail"
-                      className="h-9 w-9 rounded-full object-cover ring-2 ring-cyan-500"
+                      src={currentSlide.thumb}
+                      alt={currentSlide.name}
+                      className="h-10 w-10 rounded-full object-cover ring-2 ring-cyan-500 shrink-0"
                     />
                     <div>
-                      <p className="text-[11px] font-medium text-slate-500">
-                        Kết quả nhận dạng
-                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                          Kết quả nhận dạng
+                        </p>
+                        <span className="rounded-full bg-emerald-100 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
+                          {currentSlide.statusBadge}
+                        </span>
+                      </div>
                       <p className="text-xs font-black text-slate-900">
-                        Tôm thẻ chân trắng
+                        {currentSlide.name}
                       </p>
                       <p className="text-[11px] font-bold text-emerald-600">
-                        Độ tin cậy 96.8%
+                        Độ tin cậy {currentSlide.confidence}
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Quick Species Indicator Pills underneath card */}
+                  <div className="mt-3 flex items-center justify-between px-1">
+                    <div className="flex items-center gap-1.5">
+                      {heroShrimpSlides.map((slide, idx) => (
+                        <button
+                          key={slide.id}
+                          type="button"
+                          onClick={() => setCurrentSlideIndex(idx)}
+                          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
+                            idx === currentSlideIndex
+                              ? "bg-cyan-600 text-white shadow-sm shadow-cyan-500/30 scale-105"
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                        >
+                          <span>{slide.icon}</span>
+                          <span className="hidden sm:inline">{slide.name}</span>
+                          <span className="sm:hidden">{slide.name.replace("Tôm ", "")}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Mini Slide Dots */}
+                    <div className="flex items-center gap-1.5">
+                      {heroShrimpSlides.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setCurrentSlideIndex(idx)}
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                            idx === currentSlideIndex ? "w-6 bg-cyan-600" : "w-1.5 bg-slate-300 hover:bg-slate-400"
+                          }`}
+                          aria-label={`Slide ${idx + 1}`}
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
