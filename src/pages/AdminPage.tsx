@@ -3,8 +3,8 @@ import { usersApi, type AdminUserRow } from "../api/users.api";
 import type { Role } from "../api/auth.api";
 import { apiError } from "../lib/api";
 import { useAuthStore } from "../store/auth.store";
-import { Alert } from "../components/Alert";
-import { Spinner } from "../components/Spinner";
+import { Alert } from "../components/ui/Alert";
+import { Spinner } from "../components/ui/Spinner";
 
 export default function AdminPage() {
   const me = useAuthStore((s) => s.user);

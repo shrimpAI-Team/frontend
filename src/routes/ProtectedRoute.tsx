@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/auth.store";
-import { FullPageLoader } from "./Spinner";
+import { FullPageLoader } from "../components/ui/Spinner";
 import type { Role } from "../api/auth.api";
 
 export function ProtectedRoute({ roles }: { roles?: Role[] }) {

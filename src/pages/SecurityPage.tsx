@@ -1,12 +1,12 @@
 import { type FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
 import { useAuthStore } from "../store/auth.store";
-import { Alert } from "../components/Alert";
-import { Field } from "../components/Field";
-import { OtpInput } from "../components/OtpInput";
-import { Spinner } from "../components/Spinner";
+import { Alert } from "../components/ui/Alert";
+import { Field } from "../components/ui/Field";
+import { OtpInput } from "../components/auth/OtpInput";
+import { Spinner } from "../components/ui/Spinner";
 
 type Step = "idle" | "totp-setup" | "disable-confirm";
 
@@ -108,6 +108,14 @@ export default function SecurityPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
+      <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+        <Link to="/dashboard" className="hover:text-cyan-600">Trang chủ</Link>
+        <span>/</span>
+        <Link to="/profile" className="hover:text-cyan-600">Hồ sơ</Link>
+        <span>/</span>
+        <span className="text-slate-800">Bảo mật tài khoản</span>
+      </div>
+
       <header>
         <h1 className="text-2xl font-bold text-slate-900">Bảo mật tài khoản</h1>
         <p className="mt-1 text-sm text-slate-500">

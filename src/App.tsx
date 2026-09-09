@@ -2,16 +2,18 @@ import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuthStore } from "./store/auth.store";
 import { setSessionLostHandler } from "./lib/api";
-import { AppLayout } from "./components/AppLayout";
-import { GuestOnlyRoute, ProtectedRoute } from "./components/ProtectedRoute";
+import { AppLayout } from "./components/layout/AppLayout";
+import { GuestOnlyRoute, ProtectedRoute } from "./routes/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import VerifyOtpPage from "./pages/VerifyOtpPage";
 import TwoFactorPage from "./pages/TwoFactorPage";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import AdminPage from "./pages/AdminPage";
+import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
@@ -42,6 +44,8 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/security" element={<SecurityPage />} />
           </Route>
         </Route>

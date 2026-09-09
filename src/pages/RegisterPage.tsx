@@ -1,10 +1,10 @@
 import { type FormEvent, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthLayout } from "../components/AuthLayout";
-import { Field } from "../components/Field";
-import { Alert } from "../components/Alert";
-import { Spinner } from "../components/Spinner";
-import { OAuthButtons } from "../components/OAuthButtons";
+import { AuthLayout } from "../components/auth/AuthLayout";
+import { Field } from "../components/ui/Field";
+import { Alert } from "../components/ui/Alert";
+import { Spinner } from "../components/ui/Spinner";
+import { OAuthButtons } from "../components/auth/OAuthButtons";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
 

@@ -1,0 +1,265 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   shrimpAI Modern Interactive Effects Stylesheet
+   Hiệu ứng tương tác hiện đại chuẩn quốc tế:
+   - Button Glow, Shimmer Sweep, Hover Elevation
+   - Tabs animated underline, hover pill
+   - Card Hover Lift (bay bổng nhẹ nhàng + đổ bóng khuếch tán)
+   - Image Hover Zoom mượt mà (Cubic-bezier timing)
+   - Floating badge animation
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 1. Hiệu ứng nổi bổng cho Card */
+.card-hover-lift {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover-lift:hover {
+  transform: translateY(-6px);
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.08),
+              0 10px 20px -8px rgba(6, 182, 212, 0.15);
+}
+
+/* 2. Hiệu ứng phóng to ảnh mượt mà trong khung chứa */
+.img-container-zoom {
+  overflow: hidden;
+}
+
+.img-container-zoom img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.img-container-zoom:hover img {
+  transform: scale(1.06);
+  filter: brightness(1.03);
+}
+
+/* 3. Hiệu ứng nút bấm phát sáng & bóng đổ Cyan cao cấp */
+.btn-cyan-glow {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #0891b2 0%, #0d9488 100%);
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.btn-cyan-glow:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%);
+  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.45),
+              0 8px 12px -6px rgba(13, 148, 136, 0.3);
+}
+
+.btn-cyan-glow:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* 4. Hiệu ứng vệt sáng lướt qua khi hover (Shimmer sweep) */
+.shimmer-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.shimmer-sweep:hover::before {
+  animation: shimmerSweep 0.8s ease-in-out;
+}
+
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* 5. Hiệu ứng gạch chân trượt từ tâm của tab navigation */
+.nav-tab-modern {
+  position: relative;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-out;
+}
+
+.nav-tab-modern::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: #0891b2;
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-tab-modern:hover {
+  color: #0891b2;
+  background-color: rgba(236, 254, 255, 0.6);
+}
+
+.nav-tab-modern:hover::after {
+  width: 60%;
+}
+
+.nav-tab-active {
+  color: #0891b2 !important;
+  font-weight: 700;
+  background-color: rgba(207, 250, 254, 0.6);
+}
+
+.nav-tab-active::after {
+  width: 80% !important;
+}
+
+/* 6. Hiệu ứng huy hiệu nổi lơ lửng mềm mại (Floating badge) */
+.badge-floating {
+  animation: floatGentle 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* 7. Hiệu ứng nổi bật cho thẻ Quy trình (Process Card) */
+.process-card {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.process-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 25px 40px -12px rgba(6, 182, 212, 0.22),
+              0 12px 20px -8px rgba(15, 23, 42, 0.08);
+}
+
+.process-card .step-badge {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.process-card:hover .step-badge {
+  transform: scale(1.12);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+}
+
+/* 8. Hiệu ứng tia laser AI quét qua ảnh */
+@keyframes scanLineMoving {
+  0% {
+    top: 5%;
+    opacity: 0.4;
+  }
+  50% {
+    top: 90%;
+    opacity: 1;
+  }
+  100% {
+    top: 5%;
+    opacity: 0.4;
+  }
+}
+
+.animated-laser {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.4), #22d3ee, #38bdf8, rgba(34, 211, 238, 0.4), transparent);
+  box-shadow: 0 0 14px #22d3ee, 0 0 24px #0ea5e9;
+  animation: scanLineMoving 2.2s ease-in-out infinite;
+  z-index: 20;
+}
+
+/* Hiệu ứng khung ngắm mục tiêu AI (AI Targeting Corner Brackets) */
+.ai-corner-tl {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  border-top: 2.5px solid #22d3ee;
+  border-left: 2.5px solid #22d3ee;
+  border-top-left-radius: 4px;
+}
+.ai-corner-tr {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  border-top: 2.5px solid #22d3ee;
+  border-right: 2.5px solid #22d3ee;
+  border-top-right-radius: 4px;
+}
+.ai-corner-bl {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  border-bottom: 2.5px solid #22d3ee;
+  border-left: 2.5px solid #22d3ee;
+  border-bottom-left-radius: 4px;
+}
+.ai-corner-br {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 14px;
+  height: 14px;
+  border-bottom: 2.5px solid #22d3ee;
+  border-right: 2.5px solid #22d3ee;
+  border-bottom-right-radius: 4px;
+}
+
+/* Process Card Interactive Hover Glows */
+.process-card-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.process-card-hover:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 22px 45px -10px rgba(6, 182, 212, 0.22),
+              0 10px 20px -8px rgba(15, 23, 42, 0.08);
+}
+
+.process-card-hover:hover .process-img {
+  transform: scale(1.08);
+}
+
+.process-img {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+

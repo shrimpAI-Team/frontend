@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { AuthLayout } from "../components/AuthLayout";
-import { Spinner } from "../components/Spinner";
-import { Alert } from "../components/Alert";
+import { AuthLayout } from "../components/auth/AuthLayout";
+import { Spinner } from "../components/ui/Spinner";
+import { Alert } from "../components/ui/Alert";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
 import { useAuthStore } from "../store/auth.store";
