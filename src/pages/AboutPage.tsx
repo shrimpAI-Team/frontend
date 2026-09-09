@@ -1,12 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AnalysisModal } from "../components/ui/AnalysisModal";
 import logoImg from "../assets/Logo.png";
 import shrimpSampleImg from "../assets/shrimp_sample.jpg";
 import shrimpHeroScannerImg from "../assets/shrimp_hero_scanner.jpg";
+import shrimpBlackTigerImg from "../assets/shrimp_black_tiger.jpg";
+import shrimpGiantPrawnImg from "../assets/shrimp_giant_prawn.jpg";
+
+const aboutScannerSlides = [
+  {
+    name: "Tôm thẻ chân trắng",
+    scientificName: "Litopenaeus vannamei",
+    confidence: "96.8%",
+    image: shrimpHeroScannerImg,
+  },
+  {
+    name: "Tôm sú",
+    scientificName: "Penaeus monodon",
+    confidence: "98.4%",
+    image: shrimpBlackTigerImg,
+  },
+  {
+    name: "Tôm càng xanh",
+    scientificName: "Macrobrachium rosenbergii",
+    confidence: "97.5%",
+    image: shrimpGiantPrawnImg,
+  },
+];
 
 export default function AboutPage() {
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % aboutScannerSlides.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
 
   // 4 Trụ cột công nghệ cốt lõi
   const pillars = [
@@ -223,22 +254,33 @@ export default function AboutPage() {
                 </span>
               </div>
 
-              {/* Shrimp Visual Preview */}
-              <div className="relative h-56 w-full rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-inner">
-                <img
-                  src={shrimpHeroScannerImg}
-                  alt="Mô hình phân tích tôm AI"
-                  className="process-img h-full w-full object-cover"
-                />
-                <div className="animated-laser" />
-                <div className="ai-corner-tl" />
-                <div className="ai-corner-tr" />
-                <div className="ai-corner-bl" />
-                <div className="ai-corner-br" />
+              {/* Shrimp Visual Preview Rotating */}
+              <div className="relative h-56 w-full rounded-2xl overflow-hidden bg-slate-950 border border-cyan-500/30 shadow-inner select-none">
+                {aboutScannerSlides.map((slide, idx) => (
+                  <div
+                    key={slide.scientificName}
+                    className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                      idx === currentSlideIndex
+                        ? "opacity-100 scale-100 z-10"
+                        : "opacity-0 scale-105 pointer-events-none z-0"
+                    }`}
+                  >
+                    <img
+                      src={slide.image}
+                      alt={slide.name}
+                      className="process-img h-full w-full object-cover"
+                    />
+                  </div>
+                ))}
+                <div className="animated-laser z-20" />
+                <div className="ai-corner-tl z-20" />
+                <div className="ai-corner-tr z-20" />
+                <div className="ai-corner-bl z-20" />
+                <div className="ai-corner-br z-20" />
 
-                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-slate-950/85 backdrop-blur-md p-2.5 border border-cyan-500/30 text-white text-xs flex items-center justify-between font-mono">
-                  <span className="text-cyan-300">Target: Penaeus vannamei</span>
-                  <span className="text-emerald-400 font-bold">Conf: 96.8%</span>
+                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-slate-950/85 backdrop-blur-md p-2.5 border border-cyan-500/30 text-white text-xs flex items-center justify-between font-mono z-20">
+                  <span className="text-cyan-300">Target: {aboutScannerSlides[currentSlideIndex].scientificName}</span>
+                  <span className="text-emerald-400 font-bold">Conf: {aboutScannerSlides[currentSlideIndex].confidence}</span>
                 </div>
               </div>
 
