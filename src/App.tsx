@@ -14,7 +14,15 @@ import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
+import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
+
+function RootRedirect() {
+  const status = useAuthStore((s) => s.status);
+  if (status === "loading") return null;
+  if (status === "authenticated") return <Navigate to="/dashboard" replace />;
+  return <Navigate to="/login" replace />;
+}
 
 export default function App() {
   const bootstrap = useAuthStore((s) => s.bootstrap);
@@ -44,6 +52,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/chat" element={<ChatPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/security" element={<SecurityPage />} />
@@ -57,7 +66,7 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<RootRedirect />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

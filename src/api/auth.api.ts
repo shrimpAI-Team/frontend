@@ -115,5 +115,5 @@ export const authApi = {
       .then((r) => r.data),
 
   oauthUrl: (provider: "google" | "github") =>
-    `${import.meta.env.VITE_API_URL ?? "http://localhost:4000"}/auth/${provider}`,
+    `${api.defaults.baseURL || ""}/auth/${provider}`,
 };
