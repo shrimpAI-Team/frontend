@@ -96,8 +96,14 @@ api.interceptors.response.use(
 export const apiError = (e: unknown, fallback = "Có lỗi xảy ra") => {
   const err = e as AxiosError<any>;
   if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
-    return "Không thể kết nối đến máy chủ backend (Port 4000). Vui lòng kiểm tra backend đã được khởi chạy chưa.";
+    return "Không thể kết nối đến máy chủ backend. Vui lòng kiểm tra kết nối mạng.";
   }
   const msg = err?.response?.data?.message;
-  return Array.isArray(msg) ? msg.join(", ") : (msg ?? fallback);
+  if (msg) {
+    return Array.isArray(msg) ? msg.join(", ") : String(msg);
+  }
+  if (err?.message && !err.message.includes("AxiosError")) {
+    return err.message;
+  }
+  return fallback;
 };
