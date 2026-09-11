@@ -16,6 +16,13 @@ import AdminPage from "./pages/AdminPage";
 import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
+function RootRedirect() {
+  const status = useAuthStore((s) => s.status);
+  if (status === "loading") return null;
+  if (status === "authenticated") return <Navigate to="/dashboard" replace />;
+  return <Navigate to="/login" replace />;
+}
+
 export default function App() {
   const bootstrap = useAuthStore((s) => s.bootstrap);
   const forceLogout = useAuthStore((s) => s.forceLogout);
@@ -57,7 +64,7 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<RootRedirect />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
