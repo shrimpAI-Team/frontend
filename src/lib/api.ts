@@ -5,8 +5,20 @@ import axios, {
 } from "axios";
 import { getDeviceId, getDeviceName } from "./device";
 
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  // Nếu đã cấu hình VITE_API_URL là domain remote online (khi deploy production)
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
+    return envUrl;
+  }
+  // Môi trường dev (cả trên máy tính lẫn Safari điện thoại qua Wi-Fi):
+  // Dùng relative path "" để qua Vite Proxy cùng cổng 5174.
+  // Nhờ đó Safari iOS KHÔNG bị chặn Cookie (ITP) và không bị Tường lửa Windows chặn cổng 4000!
+  return "";
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:4000",
+  baseURL: getApiBaseUrl(),
   withCredentials: true,
 });
 
