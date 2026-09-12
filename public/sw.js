@@ -18,8 +18,14 @@ self.addEventListener('activate', (event) => {
 
 // Network-first strategy for smooth updates
 self.addEventListener('fetch', (event) => {
-  // Chỉ can thiệp vào các request GET cho static assets/trang, tuyệt đối không can thiệp vào request POST/API
   const url = new URL(event.request.url);
+
+  // Bỏ qua tài nguyên bên ngoài (Google, Facebook, Zalo) và các điều hướng trang nội bộ
+  if (url.origin !== self.location.origin || event.request.mode === 'navigate') {
+    return;
+  }
+
+  // Chỉ can thiệp vào các request GET cho static assets nội bộ, không can thiệp vào API
   if (
     event.request.method !== 'GET' ||
     url.pathname.startsWith('/auth') ||
@@ -32,8 +38,6 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });

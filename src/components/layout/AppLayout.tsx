@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../../store/auth.store";
 import { Alert } from "../ui/Alert";
 import { AnalysisModal } from "../ui/AnalysisModal";
@@ -9,7 +9,12 @@ export function AppLayout() {
   const { user, notice, setNotice, logout } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user?.avatarUrl]);
 
   const handleLogout = async () => {
     await logout();
@@ -112,14 +117,17 @@ export function AppLayout() {
                     {user?.role === "ADMIN" ? "Quản trị viên" : "Người dùng"}
                   </p>
                 </div>
-                {user?.avatarUrl ? (
+                {user?.avatarUrl && !avatarError ? (
                   <img
                     src={user.avatarUrl}
-                    alt=""
+                    alt={user.name ?? "Avatar"}
+                    referrerPolicy="no-referrer"
+                    crossOrigin="anonymous"
+                    onError={() => setAvatarError(true)}
                     className="h-9 w-9 rounded-full object-cover ring-2 ring-slate-200"
                   />
                 ) : (
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-slate-200 text-sm font-bold text-slate-700 ring-2 ring-slate-100">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-cyan-600 text-sm font-bold text-white ring-2 ring-cyan-100 shadow-xs">
                     {(user?.name ?? user?.email ?? "?").charAt(0).toUpperCase()}
                   </span>
                 )}
