@@ -114,6 +114,6 @@ export const authApi = {
       .delete<{ status: "DISABLED"; message: string }>("/auth/2fa", { data: b })
       .then((r) => r.data),
 
-  oauthUrl: (provider: "google" | "github") =>
+  oauthUrl: (provider: "google" | "facebook" | "zalo") =>
     `${import.meta.env.VITE_API_URL ?? "http://localhost:4000"}/auth/${provider}`,
 };

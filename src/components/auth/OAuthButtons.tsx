@@ -1,19 +1,25 @@
 import { authApi } from "../../api/auth.api";
 
 export function OAuthButtons({ disabled }: { disabled?: boolean }) {
-  const go = (p: "google" | "github") => {
+  const go = (p: "google" | "facebook" | "zalo") => {
     window.location.href = authApi.oauthUrl(p);
   };
 
   return (
-    <div className="grid gap-2.5 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+      {/* Google */}
       <button
         type="button"
         disabled={disabled}
         onClick={() => go("google")}
         className="btn-ghost"
+        title="Đăng nhập bằng Google"
       >
-        <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          className="h-5 w-5 shrink-0"
+          aria-hidden="true"
+        >
           <path
             fill="#4285F4"
             d="M22 12.2c0-.7-.06-1.4-.18-2.06H12v3.9h5.6a4.8 4.8 0 01-2.08 3.15v2.6h3.36C20.85 18 22 15.35 22 12.2z"
@@ -31,23 +37,50 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
             d="M12 6.05c1.47 0 2.78.5 3.82 1.5l2.85-2.85C16.96 3.06 14.7 2 12 2A10 10 0 003.1 7.65l3.48 2.5C7.35 7.87 9.48 6.05 12 6.05z"
           />
         </svg>
-        Google
+        <span>Google</span>
       </button>
 
+      {/* Facebook */}
       <button
         type="button"
         disabled={disabled}
-        onClick={() => go("github")}
+        onClick={() => go("facebook")}
         className="btn-ghost"
+        title="Đăng nhập bằng Facebook"
       >
         <svg
           viewBox="0 0 24 24"
-          className="h-5 w-5 fill-slate-900"
+          className="h-5 w-5 shrink-0"
           aria-hidden="true"
         >
-          <path d="M12 2a10 10 0 00-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 015 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0012 2z" />
+          <path
+            fill="#1877F2"
+            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+          />
         </svg>
-        GitHub
+        <span>Facebook</span>
+      </button>
+
+      {/* Zalo */}
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => go("zalo")}
+        className="btn-ghost"
+        title="Đăng nhập bằng Zalo"
+      >
+        <svg
+          viewBox="0 0 48 48"
+          className="h-5 w-5 shrink-0"
+          aria-hidden="true"
+        >
+          <rect width="48" height="48" rx="10" fill="#0068FF" />
+          <path
+            fill="#FFFFFF"
+            d="M12.5 15h9.8v3.1l-6 8.3h6.5v3.6h-11v-3.1l6-8.3h-5.3V15zm11.5 5.8c0-1.8 1.4-3.1 3.2-3.1 1.8 0 3.2 1.3 3.2 3.1v8.8h-3v-1.2c-.6.9-1.6 1.4-2.7 1.4-2.1 0-3.7-1.6-3.7-3.9 0-2.3 1.6-3.9 3.7-3.9 1.1 0 2.1.5 2.7 1.4v-2.6h-.4c-.9 0-1.7-.3-2.1-.8-.4-.5-.6-1.2-.6-2.1l-.3-.1zm3.4 4.8c-1.1 0-1.9.8-1.9 1.9s.8 1.9 1.9 1.9 1.9-.8 1.9-1.9-.8-1.9-1.9-1.9zm7.3-8.6h3.1v15h-3.1V17zm7.5 4.5c2.4 0 4.1 1.8 4.1 4.3s-1.7 4.3-4.1 4.3-4.1-1.8-4.1-4.3 1.7-4.3 4.1-4.3zm0 2.6c-1.1 0-1.9.8-1.9 1.7 0 .9.8 1.7 1.9 1.7s1.9-.8 1.9-1.7c0-.9-.8-1.7-1.9-1.7z"
+          />
+        </svg>
+        <span>Zalo</span>
       </button>
     </div>
   );
