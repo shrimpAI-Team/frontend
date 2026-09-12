@@ -28,19 +28,19 @@ export interface SessionItem {
 
 export type LoginResult =
   | {
-      status: "AUTHENTICATED";
-      accessToken: string;
-      expiresIn: number;
-      user: AuthUser;
-      revokedOtherDevices: number;
-      session: { id: string; deviceName: string | null };
-    }
+    status: "AUTHENTICATED";
+    accessToken: string;
+    expiresIn: number;
+    user: AuthUser;
+    revokedOtherDevices: number;
+    session: { id: string; deviceName: string | null };
+  }
   | {
-      status: "TWO_FACTOR_REQUIRED";
-      method: TwoFactorMethod;
-      challengeToken: string;
-      message: string;
-    }
+    status: "TWO_FACTOR_REQUIRED";
+    method: TwoFactorMethod;
+    challengeToken: string;
+    message: string;
+  }
   | { status: "EMAIL_UNVERIFIED"; email: string; message: string };
 
 export const authApi = {
@@ -87,12 +87,12 @@ export const authApi = {
       .post<
         | { status: "ENABLED"; method: "EMAIL_OTP"; message: string }
         | {
-            status: "TOTP_SETUP_PENDING";
-            otpauthUrl: string;
-            qrDataUrl: string;
-            secret: string;
-            message: string;
-          }
+          status: "TOTP_SETUP_PENDING";
+          otpauthUrl: string;
+          qrDataUrl: string;
+          secret: string;
+          message: string;
+        }
       >("/auth/2fa/enable", { method })
       .then((r) => r.data),
 

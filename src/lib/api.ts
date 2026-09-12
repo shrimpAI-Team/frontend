@@ -5,8 +5,20 @@ import axios, {
 } from "axios";
 import { getDeviceId, getDeviceName } from "./device";
 
+export const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  // Nếu đã cấu hình VITE_API_URL là domain remote online (khi deploy production)
+  if (envUrl && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {
+    return envUrl;
+  }
+  // Môi trường dev (cả trên máy tính lẫn Safari điện thoại qua Wi-Fi):
+  // Dùng relative path "" để qua Vite Proxy cùng cổng 5174.
+  // Nhờ đó Safari iOS KHÔNG bị chặn Cookie (ITP) và không bị Tường lửa Windows chặn cổng 4000!
+  return "";
+};
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "http://localhost:4000",
+  baseURL: getApiBaseUrl(),
   withCredentials: true,
 });
 
@@ -84,8 +96,14 @@ api.interceptors.response.use(
 export const apiError = (e: unknown, fallback = "Có lỗi xảy ra") => {
   const err = e as AxiosError<any>;
   if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
-    return "Không thể kết nối đến máy chủ backend (Port 4000). Vui lòng kiểm tra backend đã được khởi chạy chưa.";
+    return "Không thể kết nối đến máy chủ backend. Vui lòng kiểm tra kết nối mạng.";
   }
   const msg = err?.response?.data?.message;
-  return Array.isArray(msg) ? msg.join(", ") : (msg ?? fallback);
+  if (msg) {
+    return Array.isArray(msg) ? msg.join(", ") : String(msg);
+  }
+  if (err?.message && !err.message.includes("AxiosError")) {
+    return err.message;
+  }
+  return fallback;
 };

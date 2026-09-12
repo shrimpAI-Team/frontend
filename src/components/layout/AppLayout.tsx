@@ -16,9 +16,15 @@ export function AppLayout() {
     navigate("/login", { replace: true });
   };
 
-  const navLinks = [
+  interface NavLinkItem {
+    to: string;
+    label: string;
+    action?: () => void;
+  }
+
+  const navLinks: NavLinkItem[] = [
     { to: "/dashboard", label: "Trang chủ" },
-    { to: "#analyze", label: "Phân tích tôm", action: () => setIsAnalysisModalOpen(true) },
+    { to: "/chat", label: "Phân tích tôm" },
     { to: "/dashboard#history", label: "Lịch sử" },
     { to: "/about", label: "Giới thiệu" },
     ...(user?.role === "ADMIN" ? [{ to: "/admin", label: "Quản trị" }] : []),

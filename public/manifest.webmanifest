@@ -1,0 +1,32 @@
+{
+  "name": "shrimpAI - Trợ lý AI Thủy sản & Phân tích Tôm",
+  "short_name": "shrimpAI",
+  "description": "Hệ thống nhận dạng và phân loại tôm bằng xử lý ảnh và Trợ lý AI Thủy sản",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#0891b2",
+  "lang": "vi",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "agriculture",
+    "utilities"
+  ]
+}
