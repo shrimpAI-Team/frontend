@@ -84,8 +84,21 @@ export function AppLayout() {
             )}
           </nav>
 
-          {/* Right Action Bar: [Bắt đầu phân tích] + [User Chip khoanh đỏ] */}
+          {/* Right Action Bar: [Admin Portal 5175] + [Bắt đầu phân tích] + [User Chip] */}
           <div className="hidden items-center gap-3.5 md:flex">
+            {user?.role === "ADMIN" && (
+              <a
+                href={import.meta.env.VITE_ADMIN_PORTAL_URL || "http://localhost:5175"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-purple-50 px-3 py-1.5 text-xs font-bold text-purple-700 hover:bg-purple-100 border border-purple-200 transition shadow-xs"
+                title="Mở Cổng Quản Trị Hệ Thống chuyên biệt"
+              >
+                <span>👑</span>
+                <span>Admin Portal ↗</span>
+              </a>
+            )}
+
             {/* Nút Bắt đầu phân tích */}
             <button
               type="button"

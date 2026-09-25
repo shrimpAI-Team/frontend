@@ -69,14 +69,41 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
+      {/* Banner Cổng Quản Trị Độc Lập */}
+      <div className="rounded-2xl border border-cyan-300/40 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 text-white shadow-xl">
+        <div className="flex flex-wrap items-center justify-between gap-5">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full bg-cyan-500/20 px-3 py-1 text-xs font-bold text-cyan-300 border border-cyan-400/30">
+              <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+              Cổng Quản Trị Hệ Thống Độc Lập
+            </div>
+            <h2 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+              Trung Tâm Quản Trị Toàn Diện shrimpAI
+            </h2>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              Trang quản trị độc lập đã được kích hoạt với đầy đủ tính năng: Bảng điều khiển KPI thời gian thực, Giám sát sức khỏe dịch vụ (PostgreSQL &amp; AI Engine), Bàn chẩn đoán ảnh tôm (AI Testbench), Kiểm toán phiên đăng nhập và Giám sát hội thoại AI.
+            </p>
+          </div>
+          <a
+            href={import.meta.env.VITE_ADMIN_PORTAL_URL || "http://localhost:5175"}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500 transition transform hover:-translate-y-0.5 shrink-0"
+          >
+            <span>Mở Cổng Quản Trị Hệ Thống</span>
+            <span className="text-lg">↗</span>
+          </a>
+        </div>
+      </div>
+
       <header className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
-            👑 Quản trị người dùng
+            👑 Quản trị nhanh người dùng
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Phân quyền và khoá tài khoản
+            Phân quyền và khoá tài khoản trên cổng người dùng
           </p>
         </div>
         <input
