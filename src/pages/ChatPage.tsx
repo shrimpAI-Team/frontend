@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { chatApi, type ChatSessionItem, type ChatMessageItem } from "../api/chat.api";
 import { apiError } from "../lib/api";
 import { Spinner } from "../components/ui/Spinner";
@@ -27,6 +29,16 @@ const SUGGESTIONS = [
   },
 ];
 
+const QUICK_CHIPS = [
+  "Phân biệt giống tôm",
+  "Chỉ số nước chuẩn",
+  "Xử lý khí độc NH3/NO2",
+  "Bệnh đốm trắng WSSV",
+  "Bệnh phân trắng & EHP",
+  "Kỹ thuật canh vó thức ăn",
+  "Cách ủ men EM tỏi",
+];
+
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSessionItem[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
@@ -36,6 +48,7 @@ export default function ChatPage() {
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth >= 768 : true,
   );
@@ -169,10 +182,14 @@ export default function ChatPage() {
           if (s.id === sessionId) {
             return {
               ...s,
-              title: s.title === "Cuộc trò chuyện mới" || s.title === "Đoạn chat mới"
-                ? (trimmed.length > 30 ? `${trimmed.substring(0, 30)}...` : trimmed)
-                : s.title,
+              title:
+                s.title === "Cuộc trò chuyện mới" || s.title === "Đoạn chat mới"
+                  ? trimmed.length > 30
+                    ? `${trimmed.substring(0, 30)}...`
+                    : trimmed
+                  : s.title,
               updatedAt: new Date().toISOString(),
+              messageCount: (s.messageCount || 0) + 2,
             };
           }
           return s;
@@ -203,75 +220,21 @@ export default function ChatPage() {
     }
   };
 
-  // Render text có hỗ trợ định dạng cơ bản (tiêu đề, in đậm, gạch đầu dòng)
-  const renderFormattedMessage = (content: string) => {
-    const lines = content.split("\n");
-    return lines.map((line, idx) => {
-      if (line.startsWith("### ")) {
-        return (
-          <h4 key={idx} className="text-base font-bold text-slate-900 mt-2.5 mb-1 text-cyan-800">
-            {line.replace("### ", "")}
-          </h4>
-        );
-      }
-      if (line.startsWith("## ")) {
-        return (
-          <h3 key={idx} className="text-lg font-bold text-slate-900 mt-3 mb-1 text-cyan-900">
-            {line.replace("## ", "")}
-          </h3>
-        );
-      }
-      if (line.startsWith("- ") || line.startsWith("* ")) {
-        return (
-          <li key={idx} className="ml-4 list-disc text-slate-700 leading-relaxed my-0.5">
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line.substring(2)) }} />
-          </li>
-        );
-      }
-      if (/^\d+\.\s/.test(line)) {
-        return (
-          <p key={idx} className="font-semibold text-slate-800 mt-2 mb-0.5">
-            <span dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
-          </p>
-        );
-      }
-      if (line.startsWith("> ")) {
-        return (
-          <blockquote
-            key={idx}
-            className="my-2 rounded-r-lg border-l-4 border-cyan-500 bg-cyan-50/60 p-2.5 text-xs text-slate-700 italic"
-          >
-            {line.replace("> ", "")}
-          </blockquote>
-        );
-      }
-      if (!line.trim()) {
-        return <div key={idx} className="h-1.5" />;
-      }
-      return (
-        <p key={idx} className="leading-relaxed text-slate-700">
-          <span dangerouslySetInnerHTML={{ __html: formatInline(line) }} />
-        </p>
-      );
-    });
-  };
-
-  const formatInline = (text: string) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/`(.*?)`/g, "<code class='bg-slate-100 text-cyan-700 px-1.5 py-0.5 rounded text-xs font-mono'>$1</code>");
+  const copyMessage = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4.5rem)] bg-slate-50 overflow-hidden animate-fade-in">
+    <div className="flex flex-col h-[calc(100vh-4.5rem)] bg-slate-50 overflow-hidden animate-fade-in font-sans">
       {/* Top Banner Bar */}
       <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2.5 shadow-xs">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition"
+            className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer"
             title="Đóng / Mở danh sách đoạn chat"
           >
             ☰
@@ -280,12 +243,17 @@ export default function ChatPage() {
             <img
               src={logoImg}
               alt="shrimpAI"
-              className="h-8 w-8 rounded-full ring-2 ring-cyan-500/20 object-contain"
+              className="h-8 w-8 rounded-full ring-2 ring-cyan-500/20 object-contain shadow-xs"
             />
             <div>
-              <h2 className="text-sm font-bold text-slate-900 leading-tight">
-                Trợ lý AI Thủy sản & Phân tích Tôm
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-slate-900 leading-tight">
+                  Trợ lý AI Thủy sản & Phân tích Tôm
+                </h2>
+                <span className="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700 ring-1 ring-inset ring-cyan-600/20">
+                  AI Online
+                </span>
+              </div>
               <p className="text-[11px] text-slate-500">
                 Tư vấn giống tôm, bệnh học và kỹ thuật quản lý môi trường ao nuôi
               </p>
@@ -316,7 +284,7 @@ export default function ChatPage() {
               <button
                 type="button"
                 onClick={() => handleCreateNewSession()}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:from-cyan-700 hover:to-teal-700 transition active:scale-[0.98]"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:from-cyan-700 hover:to-teal-700 transition active:scale-[0.98] cursor-pointer"
               >
                 <span>➕</span> Đoạn chat mới
               </button>
@@ -340,7 +308,7 @@ export default function ChatPage() {
                     onClick={() => selectSession(session.id)}
                     className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-xs cursor-pointer transition ${
                       activeSessionId === session.id
-                        ? "bg-cyan-50/80 text-cyan-800 font-bold border border-cyan-200/60 shadow-xs"
+                        ? "bg-cyan-50/80 text-cyan-900 font-bold border border-cyan-200/70 shadow-xs"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
@@ -351,7 +319,7 @@ export default function ChatPage() {
                     <button
                       type="button"
                       onClick={(e) => openDeleteModal(e, session)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer"
                       title="Xóa đoạn chat này"
                     >
                       🗑️
@@ -367,12 +335,12 @@ export default function ChatPage() {
         <div className="flex flex-1 min-w-0 flex-col overflow-hidden bg-white">
           {/* Error Banner */}
           {error && (
-            <div className="mx-4 mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 flex items-center justify-between">
+            <div className="mx-4 mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 flex items-center justify-between shadow-xs">
               <span>⚠️ {error}</span>
               <button
                 type="button"
                 onClick={() => setError(null)}
-                className="text-rose-500 font-bold hover:text-rose-800"
+                className="text-rose-500 font-bold hover:text-rose-800 cursor-pointer"
               >
                 ✕
               </button>
@@ -381,27 +349,27 @@ export default function ChatPage() {
 
           {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            <div className="max-w-3xl mx-auto w-full space-y-4">
+            <div className="max-w-3xl mx-auto w-full space-y-5">
               {isLoadingMessages ? (
                 <div className="flex h-64 items-center justify-center">
                   <Spinner className="h-7 w-7 text-cyan-600" />
                 </div>
               ) : messages.length === 0 ? (
                 /* Welcome Hero & Prompt Suggestions */
-                <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center py-10">
+                <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center py-8">
                   <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-tr from-cyan-100 to-sky-100 text-cyan-600 text-3xl shadow-inner mb-4">
                     🦐
                   </div>
                   <h3 className="text-xl font-bold text-slate-900">
                     Xin chào! Tôi là Trợ lý AI Thủy sản shrimpAI
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 leading-relaxed max-w-md">
+                  <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md">
                     Bạn có thể hỏi tôi bất kỳ điều gì về giống tôm thẻ, tôm sú, tôm càng xanh,
                     chẩn đoán bệnh học, hoặc kỹ thuật quản lý môi trường nước ao nuôi.
                   </p>
 
                   {/* Suggestions Grid */}
-                  <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
+                  <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 w-full text-left">
                     {SUGGESTIONS.map((sug, i) => (
                       <button
                         key={i}
@@ -413,7 +381,7 @@ export default function ChatPage() {
                             sendMessageToSession(activeSessionId, sug.prompt);
                           }
                         }}
-                        className="group flex flex-col p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-cyan-400 hover:bg-cyan-50/30 hover:shadow-sm transition duration-200"
+                        className="group flex flex-col p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-cyan-400 hover:bg-cyan-50/30 hover:shadow-sm transition duration-200 cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-lg">{sug.icon}</span>
@@ -438,22 +406,125 @@ export default function ChatPage() {
                     }`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 text-cyan-700 text-lg shadow-xs">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-cyan-100 to-teal-100 text-cyan-700 text-lg shadow-xs ring-1 ring-cyan-200/50">
                         🦐
                       </div>
                     )}
 
                     <div
-                      className={`max-w-2xl rounded-2xl p-4 text-xs leading-relaxed shadow-xs ${
+                      className={`relative group max-w-2xl rounded-2xl p-4 text-xs leading-relaxed shadow-xs ${
                         msg.role === "user"
                           ? "bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-medium"
-                          : "bg-slate-50/90 text-slate-800 border border-slate-200/80"
+                          : "bg-slate-50/90 text-slate-800 border border-slate-200/90"
                       }`}
                     >
                       {msg.role === "user" ? (
                         <p className="whitespace-pre-wrap">{msg.content}</p>
                       ) : (
-                        <div>{renderFormattedMessage(msg.content)}</div>
+                        <div className="prose prose-xs max-w-none">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              table: ({ ...props }) => (
+                                <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 shadow-xs">
+                                  <table
+                                    className="min-w-full divide-y divide-slate-200 text-xs text-left"
+                                    {...props}
+                                  />
+                                </div>
+                              ),
+                              thead: ({ ...props }) => (
+                                <thead
+                                  className="bg-gradient-to-r from-cyan-50 to-teal-50 text-slate-800 font-bold"
+                                  {...props}
+                                />
+                              ),
+                              th: ({ ...props }) => (
+                                <th
+                                  className="px-3 py-2 font-bold text-cyan-900 border-b border-cyan-100 whitespace-nowrap"
+                                  {...props}
+                                />
+                              ),
+                              td: ({ ...props }) => (
+                                <td
+                                  className="px-3 py-1.5 text-slate-700 border-b border-slate-100"
+                                  {...props}
+                                />
+                              ),
+                              h3: ({ ...props }) => (
+                                <h3
+                                  className="text-sm font-bold text-cyan-900 mt-2.5 mb-1 flex items-center gap-1.5"
+                                  {...props}
+                                />
+                              ),
+                              h4: ({ ...props }) => (
+                                <h4
+                                  className="text-xs font-bold text-teal-800 mt-2 mb-1"
+                                  {...props}
+                                />
+                              ),
+                              ul: ({ ...props }) => (
+                                <ul
+                                  className="list-disc pl-5 my-1.5 space-y-1 text-slate-700"
+                                  {...props}
+                                />
+                              ),
+                              ol: ({ ...props }) => (
+                                <ol
+                                  className="list-decimal pl-5 my-1.5 space-y-1 text-slate-700"
+                                  {...props}
+                                />
+                              ),
+                              li: ({ ...props }) => <li className="leading-relaxed" {...props} />,
+                              blockquote: ({ ...props }) => (
+                                <blockquote
+                                  className="my-2.5 rounded-xl border-l-4 border-cyan-500 bg-cyan-50/70 p-3 text-xs text-slate-700 italic shadow-xs"
+                                  {...props}
+                                />
+                              ),
+                              code: ({ inline, children, ...props }: any) => {
+                                return inline ? (
+                                  <code
+                                    className="rounded bg-slate-200/80 px-1 py-0.5 font-mono text-[11px] text-cyan-800 font-semibold"
+                                    {...props}
+                                  >
+                                    {children}
+                                  </code>
+                                ) : (
+                                  <pre className="my-2 overflow-x-auto rounded-xl bg-slate-900 p-3 font-mono text-xs text-slate-100">
+                                    <code {...props}>{children}</code>
+                                  </pre>
+                                );
+                              },
+                              p: ({ ...props }) => (
+                                <p className="leading-relaxed my-1.5 text-slate-700" {...props} />
+                              ),
+                              strong: ({ ...props }) => (
+                                <strong className="font-bold text-slate-900" {...props} />
+                              ),
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+
+                          {/* Message Actions */}
+                          <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-400">
+                            <span>
+                              {new Date(msg.createdAt).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copyMessage(msg.id, msg.content)}
+                              className="inline-flex items-center gap-1 rounded px-2 py-0.5 hover:bg-slate-200/60 hover:text-slate-700 transition cursor-pointer"
+                              title="Sao chép nội dung"
+                            >
+                              {copiedId === msg.id ? "✓ Đã sao chép" : "📋 Sao chép"}
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
 
@@ -469,10 +540,10 @@ export default function ChatPage() {
               {/* AI Typing Indicator */}
               {isSending && (
                 <div className="flex gap-3 justify-start items-center">
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 text-cyan-700 text-lg">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 text-cyan-700 text-lg ring-1 ring-cyan-200/50">
                     🦐
                   </div>
-                  <div className="rounded-2xl border border-cyan-200 bg-cyan-50/50 px-4 py-3 text-xs text-cyan-800 flex items-center gap-2">
+                  <div className="rounded-2xl border border-cyan-200 bg-cyan-50/50 px-4 py-3 text-xs text-cyan-800 flex items-center gap-2 shadow-xs">
                     <Spinner className="h-4 w-4 text-cyan-600" />
                     <span className="font-semibold">shrimpAI đang xử lý câu trả lời...</span>
                   </div>
@@ -482,6 +553,29 @@ export default function ChatPage() {
               <div ref={messagesEndRef} />
             </div>
           </div>
+
+          {/* Quick suggestions pills when conversation is active */}
+          {messages.length > 0 && (
+            <div className="px-4 py-1.5 bg-slate-50 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <span className="text-[10px] font-semibold text-slate-400 whitespace-nowrap">
+                Gợi ý nhanh:
+              </span>
+              {QUICK_CHIPS.map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    if (activeSessionId) {
+                      sendMessageToSession(activeSessionId, chip);
+                    }
+                  }}
+                  className="rounded-full bg-white border border-slate-200 px-2.5 py-1 text-[11px] text-slate-600 hover:border-cyan-400 hover:text-cyan-700 hover:bg-cyan-50/40 transition whitespace-nowrap cursor-pointer shadow-2xs"
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Bottom Chat Input Bar */}
           <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
@@ -502,7 +596,7 @@ export default function ChatPage() {
                 type="button"
                 onClick={handleSend}
                 disabled={!inputText.trim() || isSending}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-sm hover:from-cyan-700 hover:to-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-sm hover:from-cyan-700 hover:to-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                 title="Gửi câu hỏi"
               >
                 {isSending ? (
@@ -513,7 +607,7 @@ export default function ChatPage() {
               </button>
             </div>
             <p className="mt-2 text-center text-[10px] text-slate-400">
-              shrimpAI có thể mắc lỗi. Hãy kiểm tra các thông tin quan trọng.
+              shrimpAI có thể mắc lỗi. Hãy kiểm tra các thông tin chuyên ngành quan trọng.
             </p>
           </div>
         </div>
@@ -541,7 +635,7 @@ export default function ChatPage() {
                 type="button"
                 disabled={isDeletingSession}
                 onClick={() => setSessionToDelete(null)}
-                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50"
+                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 cursor-pointer"
               >
                 Hủy bỏ
               </button>
