@@ -64,46 +64,80 @@ export default function RegisterPage() {
   return (
     <AuthLayout
       title={t("registerTitle")}
-      subtitle={t("registerSubtitle")}
+      subtitle={t("registerCardSubtitle")}
+      isRegister={true}
       footer={
-        <>
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
           {t("hasAccount")}{" "}
           <Link
             to="/login"
-            className="font-semibold text-cyan-600 hover:text-cyan-500 hover:underline"
+            className="font-bold text-[#00a2db] hover:text-[#008fc2] hover:underline transition ml-1"
           >
             {t("signInNow")}
           </Link>
-        </>
+        </p>
       }
     >
-      <form onSubmit={submit} className="space-y-4" noValidate>
+      <form onSubmit={submit} className="space-y-3" noValidate>
         {error && (
           <Alert variant="error" onClose={() => setError("")}>
             {error}
           </Alert>
         )}
 
+        {/* Name Field with User Icon */}
         <Field
           label={t("nameLabel")}
           name="name"
           autoComplete="name"
-          placeholder="Nguyễn Văn A"
+          placeholder={t("namePlaceholder")}
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+          }
         />
 
+        {/* Email Field with Envelope Icon */}
         <Field
           label={t("emailLabel")}
           type="email"
           name="email"
           autoComplete="email"
           required
-          placeholder="ban@example.com"
+          placeholder={t("emailPlaceholder")}
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          }
         />
 
+        {/* Password Field with Lock Icon */}
         <div>
           <Field
             label={t("passwordLabel")}
@@ -111,58 +145,109 @@ export default function RegisterPage() {
             name="password"
             autoComplete="new-password"
             required
+            placeholder={t("passwordPlaceholder")}
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
+            icon={
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+            }
           />
           {form.password && (
-            <>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+            <div className="mt-2">
+              <div className="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${barColor}`}
                   style={{ width: `${(strength / 4) * 100}%` }}
                 />
               </div>
-              <ul className="mt-2 grid grid-cols-2 gap-1 text-xs">
+              <ul className="mt-1.5 grid grid-cols-2 gap-1 text-[10px] sm:text-[11px]">
                 {checks.map((c) => (
                   <li
                     key={c.text}
-                    className={c.ok ? "text-emerald-500" : "text-slate-400"}
+                    className={`flex items-center gap-1 font-medium ${
+                      c.ok
+                        ? "text-emerald-500"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
                   >
-                    {c.ok ? "✓" : "○"} {c.text}
+                    <span>{c.ok ? "✓" : "○"}</span>
+                    <span>{c.text}</span>
                   </li>
                 ))}
               </ul>
-            </>
+            </div>
           )}
         </div>
 
+        {/* Confirm Password Field */}
         <Field
-          label="Xác nhận mật khẩu"
+          label={t("confirmPasswordLabel")}
           type="password"
           name="confirm"
           autoComplete="new-password"
           required
+          placeholder={t("confirmPasswordPlaceholder")}
           error={mismatch ? "Mật khẩu nhập lại không khớp" : undefined}
           value={form.confirm}
           onChange={(e) => setForm({ ...form, confirm: e.target.value })}
+          icon={
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0110 0v4" />
+            </svg>
+          }
         />
 
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading || !valid}
-          className="btn-primary"
+          className="w-full h-11 sm:h-11.5 rounded-xl bg-[#00a2db] hover:bg-[#008fc2] active:scale-[0.99] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-[0_6px_18px_rgba(0,162,219,0.32)] transition-all cursor-pointer disabled:opacity-50"
         >
-          {loading && <Spinner />}
-          {loading ? "..." : t("registerBtn")}
+          {loading ? (
+            <Spinner />
+          ) : (
+            <svg
+              className="w-4.5 h-4.5 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+              />
+            </svg>
+          )}
+          <span>{loading ? "..." : t("registerBtn")}</span>
         </button>
       </form>
 
-      <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase text-slate-400">
+      {/* Divider */}
+      <div className="my-3 sm:my-3.5 flex items-center gap-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-        {t("orSocial")}
+        {t("orSocialRegister")}
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
       </div>
 
+      {/* Social Login Buttons */}
       <OAuthButtons disabled={loading} />
     </AuthLayout>
   );

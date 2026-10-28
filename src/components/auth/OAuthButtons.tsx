@@ -6,18 +6,18 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+    <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
       {/* Google */}
       <button
         type="button"
         disabled={disabled}
         onClick={() => go("google")}
-        className="btn-ghost"
+        className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Google"
       >
         <svg
           viewBox="0 0 24 24"
-          className="h-5 w-5 shrink-0"
+          className="h-4.5 w-4.5 shrink-0"
           aria-hidden="true"
         >
           <path
@@ -45,12 +45,12 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
         type="button"
         disabled={disabled}
         onClick={() => go("facebook")}
-        className="btn-ghost"
+        className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Facebook"
       >
         <svg
           viewBox="0 0 24 24"
-          className="h-5 w-5 shrink-0"
+          className="h-4.5 w-4.5 shrink-0"
           aria-hidden="true"
         >
           <path
@@ -66,12 +66,12 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
         type="button"
         disabled={disabled}
         onClick={() => go("zalo")}
-        className="btn-ghost"
+        className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Zalo"
       >
         <svg
           viewBox="0 0 48 48"
-          className="h-5 w-5 shrink-0"
+          className="h-4.5 w-4.5 shrink-0"
           aria-hidden="true"
         >
           <rect width="48" height="48" rx="10" fill="#0068FF" />

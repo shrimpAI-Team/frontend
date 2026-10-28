@@ -121,17 +121,111 @@ api.interceptors.response.use(
   },
 );
 
+const ERROR_MAP: Record<string, { vi: string; en: string }> = {
+  "email must be an email": {
+    vi: "Email không đúng định dạng",
+    en: "Email must be a valid email address",
+  },
+  "email should not be empty": {
+    vi: "Email không được để trống",
+    en: "Email should not be empty",
+  },
+  "email must not be empty": {
+    vi: "Email không được để trống",
+    en: "Email must not be empty",
+  },
+  "password must be a string": {
+    vi: "Mật khẩu không hợp lệ",
+    en: "Password must be a valid string",
+  },
+  "password should not be empty": {
+    vi: "Mật khẩu không được để trống",
+    en: "Password should not be empty",
+  },
+  "password must not be empty": {
+    vi: "Mật khẩu không được để trống",
+    en: "Password must not be empty",
+  },
+  "Unauthorized": {
+    vi: "Email hoặc mật khẩu không chính xác",
+    en: "Invalid email or password",
+  },
+  "Email hoặc mật khẩu không đúng": {
+    vi: "Email hoặc mật khẩu không đúng",
+    en: "Invalid email or password",
+  },
+  "Tài khoản đã bị vô hiệu hoá": {
+    vi: "Tài khoản đã bị vô hiệu hoá",
+    en: "Account has been deactivated",
+  },
+  "SESSION_REVOKED": {
+    vi: "Tài khoản của bạn vừa đăng nhập trên thiết bị khác",
+    en: "Your account was logged in on another device",
+  },
+  "SESSION_EXPIRED": {
+    vi: "Phiên đăng nhập đã hết hạn do không hoạt động",
+    en: "Session expired due to inactivity",
+  },
+  "Email đã được sử dụng": {
+    vi: "Email đã được sử dụng, vui lòng chọn email khác",
+    en: "Email is already in use",
+  },
+  "Mã OTP đã hết hạn": {
+    vi: "Mã OTP đã hết hạn",
+    en: "OTP code has expired",
+  },
+  "Mã OTP không đúng": {
+    vi: "Mã OTP không đúng",
+    en: "Invalid OTP code",
+  },
+  "ThrottlerException: Too Many Requests": {
+    vi: "Quá nhiều yêu cầu, vui lòng thử lại sau giây lát",
+    en: "Too many requests, please try again in a moment",
+  },
+};
+
+function translateErrorMessage(msgStr: string): string {
+  const lang =
+    (typeof localStorage !== "undefined" &&
+      localStorage.getItem("app.lang")) ||
+    "vi";
+  const normalized = msgStr.trim();
+
+  if (ERROR_MAP[normalized]) {
+    return lang === "en"
+      ? ERROR_MAP[normalized].en
+      : ERROR_MAP[normalized].vi;
+  }
+
+  for (const [key, trans] of Object.entries(ERROR_MAP)) {
+    if (normalized.toLowerCase().includes(key.toLowerCase())) {
+      return lang === "en" ? trans.en : trans.vi;
+    }
+  }
+
+  return msgStr;
+}
+
 export const apiError = (e: unknown, fallback = "Có lỗi xảy ra") => {
+  const lang =
+    (typeof localStorage !== "undefined" &&
+      localStorage.getItem("app.lang")) ||
+    "vi";
   const err = e as AxiosError<any>;
   if (err?.code === "ERR_NETWORK" || err?.message?.includes("Network Error")) {
-    return "Không thể kết nối đến máy chủ backend. Vui lòng kiểm tra kết nối mạng.";
+    return lang === "en"
+      ? "Cannot connect to backend server. Please check your network connection."
+      : "Không thể kết nối đến máy chủ backend. Vui lòng kiểm tra kết nối mạng.";
   }
   const msg = err?.response?.data?.message;
   if (msg) {
-    return Array.isArray(msg) ? msg.join(", ") : String(msg);
+    if (Array.isArray(msg)) {
+      return msg.map(translateErrorMessage).join(", ");
+    }
+    return translateErrorMessage(String(msg));
   }
   if (err?.message && !err.message.includes("AxiosError")) {
-    return err.message;
+    return translateErrorMessage(err.message);
   }
-  return fallback;
+  return translateErrorMessage(fallback);
 };
