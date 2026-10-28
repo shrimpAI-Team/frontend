@@ -29,6 +29,8 @@ function RootRedirect() {
 
 export default function App() {
   const bootstrap = useAuthStore((s) => s.bootstrap);
+  const status = useAuthStore((s) => s.status);
+  const refreshUser = useAuthStore((s) => s.refreshUser);
   const forceLogout = useAuthStore((s) => s.forceLogout);
   const initTheme = useThemeStore((s) => s.initTheme);
   const initLang = useI18nStore((s) => s.initLang);
@@ -40,6 +42,31 @@ export default function App() {
     setSessionLostHandler(forceLogout);
     void bootstrap();
   }, [bootstrap, forceLogout, initTheme, initLang]);
+
+  // Kiểm tra phiên liên tục & tức thì khi chuyển tab để đá tài khoản ngay khi nơi khác đăng nhập
+  useEffect(() => {
+    if (status !== "authenticated") return;
+
+    const checkSession = () => {
+      void refreshUser().catch(() => {});
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkSession();
+      }
+    };
+
+    const timer = setInterval(checkSession, 10_000);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("focus", checkSession);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("focus", checkSession);
+    };
+  }, [status, refreshUser]);
 
   return (
     <BrowserRouter>

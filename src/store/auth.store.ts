@@ -36,9 +36,16 @@ export const useAuthStore = create<AuthState>((set) => ({
       }
       const user = await authApi.me();
       set({ user, status: "authenticated" });
-    } catch {
+    } catch (err: any) {
       setAccessToken(null);
-      set({ user: null, status: "guest" });
+      const msg = err?.response?.data?.message;
+      const notice =
+        msg === "SESSION_REVOKED"
+          ? "Tài khoản của bạn vừa đăng nhập trên thiết bị khác"
+          : msg === "SESSION_EXPIRED"
+            ? "Phiên đăng nhập đã hết hạn do không hoạt động"
+            : null;
+      set({ user: null, status: "guest", notice });
     }
   },
 

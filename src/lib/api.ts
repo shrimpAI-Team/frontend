@@ -36,22 +36,32 @@ export const setSessionLostHandler = (fn: (reason: string) => void) => {
 api.interceptors.request.use((cfg: InternalAxiosRequestConfig) => {
   cfg.headers.set("X-Device-Id", getDeviceId());
   cfg.headers.set("X-Device-Name", getDeviceName());
+  cfg.headers.set("X-Client-Type", "client");
   if (accessToken) cfg.headers.set("Authorization", `Bearer ${accessToken}`);
   return cfg;
 });
 
 let refreshing: Promise<string | null> | null = null;
+let lastRefreshError: string | null = null;
 
 async function doRefresh(): Promise<string | null> {
   try {
+    lastRefreshError = null;
     const { data } = await axios.post(
       `${api.defaults.baseURL}/auth/refresh`,
       {},
-      { withCredentials: true, headers: { "X-Device-Id": getDeviceId() } },
+      {
+        withCredentials: true,
+        headers: {
+          "X-Device-Id": getDeviceId(),
+          "X-Client-Type": "client",
+        },
+      },
     );
     accessToken = data?.accessToken ?? null;
     return accessToken;
-  } catch {
+  } catch (err: any) {
+    lastRefreshError = err?.response?.data?.message ?? "REFRESH_FAILED";
     accessToken = null;
     return null;
   } finally {
@@ -65,6 +75,14 @@ api.interceptors.response.use(
     const cfg = error.config as AxiosRequestConfig & { _retried?: boolean };
     const status = error.response?.status;
     const url = cfg?.url ?? "";
+    const origMsg = error.response?.data?.message;
+
+    // Nếu chính phiên này bị thu hồi do đăng nhập ở nơi khác, out ngay mà không cố refresh
+    if (status === 401 && origMsg === "SESSION_REVOKED") {
+      accessToken = null;
+      onSessionLost?.("Tài khoản của bạn vừa đăng nhập trên thiết bị khác");
+      return Promise.reject(error);
+    }
 
     const skip = [
       "/auth/login",
@@ -82,11 +100,21 @@ api.interceptors.response.use(
       const token = await refreshing;
       if (token) return api(cfg);
 
-      // Thiết bị khác đã đăng nhập ⇒ phiên bị thu hồi
+      const isRevoked =
+        origMsg === "SESSION_REVOKED" ||
+        lastRefreshError === "SESSION_REVOKED";
+
+      const isExpired =
+        origMsg === "SESSION_EXPIRED" ||
+        lastRefreshError === "SESSION_EXPIRED" ||
+        lastRefreshError === "Phiên đã hết hạn";
+
       onSessionLost?.(
-        error.response?.data?.message === "SESSION_REVOKED"
+        isRevoked
           ? "Tài khoản của bạn vừa đăng nhập trên thiết bị khác"
-          : "Phiên đăng nhập đã kết thúc",
+          : isExpired
+            ? "Phiên đăng nhập đã hết hạn do không hoạt động"
+            : "Phiên đăng nhập đã kết thúc",
       );
     }
     return Promise.reject(error);
