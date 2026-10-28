@@ -11,50 +11,50 @@ interface OutletContextType {
   openAnalysisModal: () => void;
 }
 
-const heroShrimpSlides = [
-  {
-    id: "vannamei",
-    name: "Tôm thẻ chân trắng",
-    scientificName: "Litopenaeus vannamei",
-    confidence: "96.8%",
-    statusBadge: "Đã nhận dạng",
-    specimenBadge: "Giống nuôi chủ lực",
-    size: "Size: 30 con/kg • Đạt chuẩn",
-    image: shrimpHeroScannerImg,
-    thumb: shrimpSampleImg,
-    icon: "🦐",
-  },
-  {
-    id: "monodon",
-    name: "Tôm sú",
-    scientificName: "Penaeus monodon",
-    confidence: "98.4%",
-    statusBadge: "Đã nhận dạng",
-    specimenBadge: "Tôm xuất khẩu giá trị cao",
-    size: "Size: 15 con/kg • Vân vằn rõ",
-    image: shrimpBlackTigerImg,
-    thumb: shrimpBlackTigerImg,
-    icon: "🐅",
-  },
-  {
-    id: "rosenbergii",
-    name: "Tôm càng xanh",
-    scientificName: "Macrobrachium rosenbergii",
-    confidence: "97.5%",
-    statusBadge: "Đã nhận dạng",
-    specimenBadge: "Đặc sản nước ngọt",
-    size: "Size: 10 con/kg • Càng xanh bóng",
-    image: shrimpGiantPrawnImg,
-    thumb: shrimpGiantPrawnImg,
-    icon: "🦞",
-  },
-];
-
 export default function DashboardPage() {
   const { openAnalysisModal } = useOutletContext<OutletContextType>();
-  const { t } = useI18nStore();
+  const { t, lang } = useI18nStore();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  const heroShrimpSlides = [
+    {
+      id: "vannamei",
+      name: t("the_chan_trang"),
+      scientificName: "Litopenaeus vannamei",
+      confidence: "96.8%",
+      statusBadge: t("identifiedStatus"),
+      specimenBadge: lang === "vi" ? "Giống nuôi chủ lực" : "Primary Commercial Breed",
+      size: lang === "vi" ? "Size: 30 con/kg • Đạt chuẩn" : "Size: 30 pcs/kg • Standard",
+      image: shrimpHeroScannerImg,
+      thumb: shrimpSampleImg,
+      icon: "🦐",
+    },
+    {
+      id: "monodon",
+      name: t("tom_su"),
+      scientificName: "Penaeus monodon",
+      confidence: "98.4%",
+      statusBadge: t("identifiedStatus"),
+      specimenBadge: lang === "vi" ? "Tôm xuất khẩu giá trị cao" : "High-Value Export Species",
+      size: lang === "vi" ? "Size: 15 con/kg • Vân vằn rõ" : "Size: 15 pcs/kg • Clear stripes",
+      image: shrimpBlackTigerImg,
+      thumb: shrimpBlackTigerImg,
+      icon: "🐅",
+    },
+    {
+      id: "rosenbergii",
+      name: t("tom_cang_xanh"),
+      scientificName: "Macrobrachium rosenbergii",
+      confidence: "97.5%",
+      statusBadge: t("identifiedStatus"),
+      specimenBadge: lang === "vi" ? "Đặc sản nước ngọt" : "Freshwater Specialty",
+      size: lang === "vi" ? "Size: 10 con/kg • Càng xanh bóng" : "Size: 10 pcs/kg • Vibrant claws",
+      image: shrimpGiantPrawnImg,
+      thumb: shrimpGiantPrawnImg,
+      icon: "🦞",
+    },
+  ];
 
   // Auto rotate slides every 4 seconds unless user hovers
   useEffect(() => {
@@ -147,11 +147,10 @@ export default function DashboardPage() {
                     {heroShrimpSlides.map((slide, idx) => (
                       <div
                         key={slide.id}
-                        className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-                          idx === currentSlideIndex
+                        className={`absolute inset-0 transition-all duration-700 ease-in-out ${idx === currentSlideIndex
                             ? "opacity-100 scale-100 z-10"
                             : "opacity-0 scale-105 pointer-events-none z-0"
-                        }`}
+                          }`}
                       >
                         <img
                           src={slide.image}
@@ -254,11 +253,10 @@ export default function DashboardPage() {
                           key={slide.id}
                           type="button"
                           onClick={() => setCurrentSlideIndex(idx)}
-                          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
-                            idx === currentSlideIndex
+                          className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${idx === currentSlideIndex
                               ? "bg-cyan-600 text-white shadow-sm shadow-cyan-500/30 scale-105"
                               : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                          }`}
+                            }`}
                         >
                           <span>{slide.icon}</span>
                           <span className="hidden sm:inline">{slide.name}</span>
@@ -274,9 +272,8 @@ export default function DashboardPage() {
                           key={idx}
                           type="button"
                           onClick={() => setCurrentSlideIndex(idx)}
-                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                            idx === currentSlideIndex ? "w-6 bg-cyan-600" : "w-1.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400"
-                          }`}
+                          className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${idx === currentSlideIndex ? "w-6 bg-cyan-600" : "w-1.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400"
+                            }`}
                           aria-label={`Slide ${idx + 1}`}
                         />
                       ))}
@@ -299,9 +296,9 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
-                AI Vision
+                {t("statVisionTitle")}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Công nghệ xử lý ảnh hiện đại</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("statVisionDesc")}</p>
             </div>
           </div>
 
@@ -312,9 +309,9 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
-                96.8%
+                {t("statConfidenceTitle")}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{t("confidence")}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("statConfidenceDesc")}</p>
             </div>
           </div>
 
@@ -325,9 +322,9 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
-                Phân tích hình ảnh
+                {t("statAnalysisTitle")}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Nhanh chóng, chính xác</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("statAnalysisDesc")}</p>
             </div>
           </div>
 
@@ -338,9 +335,9 @@ export default function DashboardPage() {
             </div>
             <div>
               <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
-                Kết quả tức thì
+                {t("statInstantTitle")}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Tiết kiệm thời gian</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("statInstantDesc")}</p>
             </div>
           </div>
         </div>
@@ -350,14 +347,13 @@ export default function DashboardPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-12">
         <div className="space-y-3">
           <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
-            TÍNH NĂNG NỔI BẬT
+            {t("featuresBadge")}
           </span>
           <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl lg:text-4xl">
-            Phân tích thông minh từ hình ảnh
+            {t("featuresTitle")}
           </h2>
           <p className="mx-auto max-w-2xl text-sm text-slate-500 dark:text-slate-400 sm:text-base">
-            Ứng dụng công nghệ AI để giúp bạn nhận dạng, phân loại và quản lý
-            thông tin về các giống tôm một cách nhanh chóng, chính xác và hiệu quả.
+            {t("featuresSubtitle")}
           </p>
         </div>
 
@@ -368,11 +364,10 @@ export default function DashboardPage() {
               🦐
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
-              Nhận dạng giống tôm
+              {t("feat1Title")}
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              Phân biệt chính xác các giống tôm phổ biến như: tôm thẻ chân trắng,
-              tôm sú, tôm càng xanh, tôm hùm...
+              {t("feat1Desc")}
             </p>
           </div>
 
@@ -382,11 +377,10 @@ export default function DashboardPage() {
               🧠
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
-              Phân loại bằng AI
+              {t("feat2Title")}
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              Sử dụng mô hình học sâu (Deep Learning) để đạt độ chính xác cao trong
-              việc phân loại.
+              {t("feat2Desc")}
             </p>
           </div>
 
@@ -396,10 +390,10 @@ export default function DashboardPage() {
               🗄️
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
-              Lưu lịch sử phân tích
+              {t("feat3Title")}
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-              Lưu trữ kết quả và hình ảnh để theo dõi, tra cứu và quản lý dễ dàng.
+              {t("feat3Desc")}
             </p>
           </div>
         </div>
@@ -410,14 +404,13 @@ export default function DashboardPage() {
         <div className="rounded-3xl border border-sky-100 dark:border-slate-800 bg-gradient-to-b from-sky-50/50 to-white dark:from-slate-900/60 dark:to-slate-900/90 p-6 sm:p-10 lg:p-12 shadow-sm space-y-8">
           <div className="space-y-2">
             <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
-              TRẢI NGHIỆM NGAY
+              {t("demoBadge")}
             </span>
             <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
-              Phân tích tôm chỉ với vài bước
+              {t("demoTitle")}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
-              Tải lên hình ảnh tôm, hệ thống sẽ tự động xử lý và trả về kết quả
-              nhận dạng giống tôm cùng độ tin cậy.
+              {t("demoSubtitle")}
             </p>
           </div>
 
@@ -443,16 +436,16 @@ export default function DashboardPage() {
                           <polyline points="17 8 12 3 7 8" />
                           <line x1="12" y1="3" x2="12" y2="15" />
                         </svg>
-                        Tải ảnh
+                        {t("uploadShrimpSample")}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-base font-bold text-slate-800 group-hover:text-cyan-700 transition">
-                  Kéo thả ảnh vào đây
+                <p className="text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
+                  {t("demoDrag")}
                 </p>
-                <p className="text-xs text-slate-400 mt-1 mb-4">hoặc</p>
+                <p className="text-xs text-slate-400 mt-1 mb-4">{t("demoOr")}</p>
 
                 <button
                   type="button"
@@ -470,11 +463,11 @@ export default function DashboardPage() {
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <polyline points="21 15 16 10 5 21" />
                   </svg>
-                  <span>Chọn ảnh từ máy</span>
+                  <span>{t("demoChoose")}</span>
                 </button>
 
                 <p className="mt-4 text-[11px] text-slate-400">
-                  Hỗ trợ: JPG, PNG, WEBP | Dung lượng tối đa: 10MB
+                  {t("demoFormats")}
                 </p>
               </div>
             </div>
@@ -486,7 +479,7 @@ export default function DashboardPage() {
                   <div className="sm:col-span-5 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 aspect-square">
                     <img
                       src={shrimpSampleImg}
-                      alt="Tôm thẻ chân trắng"
+                      alt={t("the_chan_trang")}
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -496,11 +489,11 @@ export default function DashboardPage() {
                         {t("resultTitle")}
                       </span>
                       <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-                        Đã nhận dạng
+                        {t("identifiedStatus")}
                       </span>
                     </div>
                     <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                      Tôm thẻ chân trắng
+                      {t("the_chan_trang")}
                     </h3>
                     <p className="text-xs font-medium italic text-slate-400">
                       (Litopenaeus vannamei)
@@ -522,13 +515,13 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Thông tin phân tích</p>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t("analysisInfo")}</p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                      <span>🦐</span> Loài tôm
+                      <span>🦐</span> {t("shrimpSpecies")}
                     </div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
-                      Tôm thẻ chân trắng
+                      {t("the_chan_trang")}
                     </div>
 
                     <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
@@ -539,14 +532,14 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                      <span>⏱️</span> Thời gian phân tích
+                      <span>⏱️</span> {t("analysisTime")}
                     </div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
-                      12.4 giây
+                      {t("demoSampleTime")}
                     </div>
 
                     <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                      <span>📐</span> Kích thước ảnh
+                      <span>📐</span> {t("imageSize")}
                     </div>
                     <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
                       1024 x 768 px
@@ -557,8 +550,7 @@ export default function DashboardPage() {
                 <div className="mt-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-3 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-2">
                   <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                   <span>
-                    Kết quả được dựa trên mô hình AI và có thể thay đổi tùy theo chất
-                    lượng hình ảnh.
+                    {t("demoNote")}
                   </span>
                 </div>
               </div>
@@ -571,13 +563,13 @@ export default function DashboardPage() {
       <section id="steps" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="space-y-3 text-center">
           <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
-            QUY TRÌNH HOẠT ĐỘNG
+            {t("stepsBadge")}
           </span>
           <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
-            Chỉ 3 bước đơn giản
+            {t("stepsTitle")}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-            Hệ thống shrimpAI tự động hoá toàn bộ quy trình từ tải ảnh, xử lý dữ liệu thị giác đến trả kết quả định danh tức thì.
+            {t("stepsSubtitle")}
           </p>
         </div>
 
@@ -594,7 +586,7 @@ export default function DashboardPage() {
                   01
                 </div>
                 <span className="rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 text-[11px] font-bold px-3 py-1 border border-cyan-100/80 dark:border-cyan-800/80">
-                  Tải dữ liệu
+                  {t("step1Badge")}
                 </span>
               </div>
 
@@ -602,7 +594,7 @@ export default function DashboardPage() {
               <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-inner group-hover:border-cyan-300 transition-colors">
                 <img
                   src={shrimpSampleImg}
-                  alt="Tải ảnh tôm"
+                  alt={t("step1Title")}
                   className="process-img h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {/* Upload overlay frame */}
@@ -616,25 +608,25 @@ export default function DashboardPage() {
                   <span>JPG • PNG • WEBP</span>
                 </div>
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 via-slate-950/40 to-transparent p-3 pt-6 text-white flex items-center justify-between">
-                  <span className="text-xs font-semibold">Kéo thả hoặc tải từ máy</span>
+                  <span className="text-xs font-semibold">{t("dragOrUpload")}</span>
                   <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/80 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-xs">
-                    Sẵn sàng
+                    {t("step1Ready")}
                   </span>
                 </div>
               </div>
 
               <div className="mt-5 space-y-1.5">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                  1. Tải ảnh tôm
+                  {t("step1Title")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Tải lên ảnh chụp rõ nét tôm thương phẩm hoặc chụp trực tiếp tại bờ ao bằng camera di động.
+                  {t("step1Desc")}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">
-              <span>Trải nghiệm tải ảnh ngay</span>
+              <span>{t("step1Action")}</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -655,7 +647,7 @@ export default function DashboardPage() {
                 </div>
                 <span className="rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[11px] font-bold px-3 py-1 border border-teal-100/80 dark:border-teal-800/80 flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-teal-500 animate-ping" />
-                  AI Vision
+                  {t("step2Badge")}
                 </span>
               </div>
 
@@ -663,7 +655,7 @@ export default function DashboardPage() {
               <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-900 border border-cyan-500/40 shadow-inner">
                 <img
                   src={shrimpSampleImg}
-                  alt="AI phân tích"
+                  alt={t("step2Title")}
                   className="process-img h-full w-full object-cover filter contrast-105 group-hover:scale-105 transition-transform duration-500"
                 />
                 {/* AI Laser Scan line */}
@@ -690,16 +682,16 @@ export default function DashboardPage() {
 
               <div className="mt-5 space-y-1.5">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
-                  2. AI phân tích
+                  {t("step2Title")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Mô hình AI đa tầng bóc tách cấu trúc vỏ, gai chủy, cuống mắt và phân tích hình thái học độ chính xác cao.
+                  {t("step2Desc")}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-teal-600 dark:text-teal-400 group-hover:translate-x-1 transition-transform">
-              <span>Xem mô phỏng quét AI</span>
+              <span>{t("step2Action")}</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -719,7 +711,7 @@ export default function DashboardPage() {
                   03
                 </div>
                 <span className="rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold px-3 py-1 border border-emerald-100/80 dark:border-emerald-800/80 flex items-center gap-1">
-                  ✓ Độ tin cậy 96.8%
+                  {t("step3Badge")}
                 </span>
               </div>
 
@@ -727,7 +719,7 @@ export default function DashboardPage() {
               <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-emerald-200/80 dark:border-emerald-700 shadow-sm group-hover:border-emerald-300 transition-colors">
                 <img
                   src={shrimpSampleImg}
-                  alt="Nhận kết quả"
+                  alt={t("step3Title")}
                   className="process-img h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
 
@@ -740,13 +732,13 @@ export default function DashboardPage() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Đã nhận dạng
+                  {t("identifiedStatus")}
                 </div>
 
                 {/* Floating Bottom Card */}
                 <div className="absolute bottom-3 inset-x-3 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2.5 border border-emerald-200/90 dark:border-slate-800 shadow-md">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
-                    <span>Tôm thẻ chân trắng</span>
+                    <span>{t("the_chan_trang")}</span>
                     <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">96.8%</span>
                   </div>
                   <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
@@ -760,16 +752,16 @@ export default function DashboardPage() {
 
               <div className="mt-5 space-y-1.5">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                  3. Nhận kết quả
+                  {t("step3Title")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Nhận kết quả định danh giống tôm, tên khoa học, độ tin cậy và lưu tự động vào lịch sử phân tích.
+                  {t("step3Desc")}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
-              <span>Xem chi tiết báo cáo</span>
+              <span>{t("step3Action")}</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -794,7 +786,7 @@ export default function DashboardPage() {
                 shrimp<span className="text-cyan-600 dark:text-cyan-400">AI</span>
               </span>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Hệ thống nhận dạng và phân loại tôm bằng xử lý ảnh và AI
+                {t("footerDesc")}
               </p>
             </div>
           </div>
@@ -821,7 +813,7 @@ export default function DashboardPage() {
 
           {/* Copyright */}
           <div className="text-xs text-slate-400">
-            © 2025 shrimpAI Team. All rights reserved.
+            {t("footerCopyright")}
           </div>
         </div>
       </footer>
