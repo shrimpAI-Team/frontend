@@ -40,9 +40,15 @@ export function AppLayout() {
   ];
 
   return (
-    <div className="min-h-dvh flex flex-col bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 transition-colors">
+    <div
+      className="min-h-dvh flex flex-col bg-[#f8fafc] dark:bg-[#030712] text-slate-900 dark:text-slate-100 transition-colors"
+      style={{ backgroundColor: "var(--bg-app)", color: "var(--text-primary)" }}
+    >
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#090d16]/95 backdrop-blur shadow-xs transition-colors">
+      <header
+        className="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#090d16]/95 backdrop-blur shadow-xs transition-colors"
+        style={{ backgroundColor: "var(--bg-header)", borderColor: "var(--border-subtle)" }}
+      >
         <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           {/* Logo Brand */}
           <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0 group">

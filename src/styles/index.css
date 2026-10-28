@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "./App.css";
 
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   --color-brand-50: oklch(97% 0.02 275);
   --color-brand-100: oklch(93% 0.05 275);
@@ -22,7 +24,7 @@ html, body {
 [data-theme="light"],
 html.light {
   --bg-app: #f8fafc;
-  --bg-header: rgba(255, 255, 255, 0.92);
+  --bg-header: rgba(255, 255, 255, 0.95);
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
   --border-subtle: rgba(0, 0, 0, 0.08);
@@ -31,8 +33,10 @@ html.light {
   --text-secondary: #475569;
   --text-muted: #64748b;
   --input-bg: #ffffff;
-  --btn-secondary-bg: rgba(0, 0, 0, 0.04);
-  --btn-secondary-hover: rgba(0, 0, 0, 0.08);
+  --btn-toggle-bg: #f1f5f9;
+  --btn-toggle-border: #cbd5e1;
+  --btn-toggle-hover: #e2e8f0;
+  --btn-toggle-text: #0f172a;
   --modal-bg: #ffffff;
   color-scheme: light;
 }
@@ -40,7 +44,7 @@ html.light {
 [data-theme="dark"],
 html.dark {
   --bg-app: #030712;
-  --bg-header: rgba(9, 13, 22, 0.92);
+  --bg-header: rgba(9, 13, 22, 0.95);
   --bg-card: #0f172a;
   --bg-card-hover: #1e293b;
   --border-subtle: rgba(255, 255, 255, 0.08);
@@ -49,51 +53,79 @@ html.dark {
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --input-bg: rgba(15, 23, 42, 0.95);
-  --btn-secondary-bg: rgba(255, 255, 255, 0.06);
-  --btn-secondary-hover: rgba(255, 255, 255, 0.12);
+  --btn-toggle-bg: rgba(255, 255, 255, 0.08);
+  --btn-toggle-border: rgba(255, 255, 255, 0.16);
+  --btn-toggle-hover: rgba(255, 255, 255, 0.15);
+  --btn-toggle-text: #f8fafc;
   --modal-bg: #090d16;
   color-scheme: dark;
 }
 
-html.dark body {
+/* Base Body Application */
+body {
   background-color: var(--bg-app);
   color: var(--text-primary);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-html.dark .card {
-  background-color: var(--bg-card);
-  border-color: var(--border-subtle);
-  color: var(--text-primary);
+/* Bulletproof Dark Theme Overrides */
+html.dark body,
+[data-theme="dark"] body {
+  background-color: #030712 !important;
+  color: #f8fafc !important;
 }
 
-html.dark .card-hover-lift {
-  background-color: var(--bg-card);
-  border-color: var(--border-subtle);
-  color: var(--text-primary);
+html.dark header,
+[data-theme="dark"] header {
+  background-color: rgba(9, 13, 22, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
-html.dark .input {
+html.dark .card,
+html.dark .card-hover-lift,
+html.dark .process-card,
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-hover-lift,
+[data-theme="dark"] .process-card {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #f8fafc !important;
+}
+
+html.dark footer,
+[data-theme="dark"] footer {
+  background-color: #090d16 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.dark .input,
+[data-theme="dark"] .input {
   background-color: var(--input-bg);
   border-color: rgba(255, 255, 255, 0.12);
   color: var(--text-primary);
 }
 
-html.dark .label {
+html.dark .label,
+[data-theme="dark"] .label {
   color: var(--text-secondary);
 }
 
-html.dark .nav-tab-modern {
+html.dark .nav-tab-modern,
+[data-theme="dark"] .nav-tab-modern {
   color: var(--text-secondary);
 }
-html.dark .nav-tab-modern:hover {
+html.dark .nav-tab-modern:hover,
+[data-theme="dark"] .nav-tab-modern:hover {
   color: #38bdf8;
   background-color: rgba(6, 182, 212, 0.12);
 }
-html.dark .nav-tab-active {
+html.dark .nav-tab-active,
+[data-theme="dark"] .nav-tab-active {
   color: #38bdf8;
   background-color: rgba(6, 182, 212, 0.18);
 }
 
+/* Switcher Button: High-Contrast & Beautiful in Both Modes */
 .theme-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -102,18 +134,19 @@ html.dark .nav-tab-active {
   border-radius: 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
-  border: 1px solid var(--border-subtle);
-  background-color: var(--btn-secondary-bg);
-  color: var(--text-primary);
+  border: 1px solid var(--btn-toggle-border);
+  background-color: var(--btn-toggle-bg);
+  color: var(--btn-toggle-text);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   user-select: none;
 }
 .theme-toggle-btn:hover {
-  background-color: var(--btn-secondary-hover);
+  background-color: var(--btn-toggle-hover);
   border-color: var(--border-highlight);
   transform: translateY(-1px);
 }
+
 
 
 /* ════════════════════════ KEYFRAME ANIMATIONS ════════════════════════ */
