@@ -5,6 +5,7 @@ import { chatApi, type ChatSessionItem, type ChatMessageItem } from "../api/chat
 import { apiError } from "../lib/api";
 import { Spinner } from "../components/ui/Spinner";
 import logoImg from "../assets/Logo.png";
+import { useI18nStore } from "../store/i18n.store";
 
 const SUGGESTIONS = [
   {
@@ -40,6 +41,7 @@ const QUICK_CHIPS = [
 ];
 
 export default function ChatPage() {
+  const { t } = useI18nStore();
   const [sessions, setSessions] = useState<ChatSessionItem[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessageItem[]>([]);
@@ -227,14 +229,14 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4.5rem)] bg-slate-50 overflow-hidden animate-fade-in font-sans">
+    <div className="flex flex-col h-[calc(100vh-4.5rem)] bg-slate-50 dark:bg-[#030712] overflow-hidden animate-fade-in font-sans transition-colors">
       {/* Top Banner Bar */}
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2.5 shadow-xs">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] px-4 py-2.5 shadow-xs transition-colors">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="rounded-lg p-1.5 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition cursor-pointer"
+            className="rounded-lg p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
             title="Đóng / Mở danh sách đoạn chat"
           >
             ☰
@@ -247,15 +249,15 @@ export default function ChatPage() {
             />
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-slate-900 leading-tight">
-                  Trợ lý AI Thủy sản & Phân tích Tôm
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                  {t("chatTitle")}
                 </h2>
-                <span className="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700 ring-1 ring-inset ring-cyan-600/20">
+                <span className="inline-flex items-center rounded-full bg-cyan-50 dark:bg-cyan-950/50 px-2 py-0.5 text-[10px] font-semibold text-cyan-700 dark:text-cyan-300 ring-1 ring-inset ring-cyan-600/20 dark:ring-cyan-500/30">
                   AI Online
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500">
-                Tư vấn giống tôm, bệnh học và kỹ thuật quản lý môi trường ao nuôi
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {t("chatSubtitle")}
               </p>
             </div>
           </div>
@@ -276,17 +278,17 @@ export default function ChatPage() {
         <aside
           className={`${
             sidebarOpen ? "w-72 border-r" : "w-0 border-r-0"
-          } max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-30 max-md:shadow-2xl md:relative flex flex-col border-slate-200 bg-white transition-all duration-300 shrink-0 overflow-hidden select-none`}
+          } max-md:absolute max-md:inset-y-0 max-md:left-0 max-md:z-30 max-md:shadow-2xl md:relative flex flex-col border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] transition-all duration-300 shrink-0 overflow-hidden select-none`}
         >
           <div className="w-72 flex flex-col h-full shrink-0">
             {/* New Chat Button */}
-            <div className="p-3 border-b border-slate-100">
+            <div className="p-3 border-b border-slate-100 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => handleCreateNewSession()}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:from-cyan-700 hover:to-teal-700 transition active:scale-[0.98] cursor-pointer"
               >
-                <span>➕</span> Đoạn chat mới
+                <span>➕</span> {t("clearChat")}
               </button>
             </div>
 
@@ -308,8 +310,8 @@ export default function ChatPage() {
                     onClick={() => selectSession(session.id)}
                     className={`group flex items-center justify-between rounded-xl px-3 py-2.5 text-xs cursor-pointer transition ${
                       activeSessionId === session.id
-                        ? "bg-cyan-50/80 text-cyan-900 font-bold border border-cyan-200/70 shadow-xs"
-                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                        ? "bg-cyan-50/80 dark:bg-cyan-950/40 text-cyan-900 dark:text-cyan-300 font-bold border border-cyan-200/70 dark:border-cyan-800/70 shadow-xs"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-200"
                     }`}
                   >
                     <div className="flex items-center gap-2 truncate flex-1 mr-1">
@@ -319,7 +321,7 @@ export default function ChatPage() {
                     <button
                       type="button"
                       onClick={(e) => openDeleteModal(e, session)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded transition cursor-pointer"
                       title="Xóa đoạn chat này"
                     >
                       🗑️
@@ -332,7 +334,7 @@ export default function ChatPage() {
         </aside>
 
         {/* Chat Area */}
-        <div className="flex flex-1 min-w-0 flex-col overflow-hidden bg-white">
+        <div className="flex flex-1 min-w-0 flex-col overflow-hidden bg-white dark:bg-[#090d16]">
           {/* Error Banner */}
           {error && (
             <div className="mx-4 mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-800 flex items-center justify-between shadow-xs">
@@ -357,15 +359,14 @@ export default function ChatPage() {
               ) : messages.length === 0 ? (
                 /* Welcome Hero & Prompt Suggestions */
                 <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center py-8">
-                  <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-tr from-cyan-100 to-sky-100 text-cyan-600 text-3xl shadow-inner mb-4">
+                  <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-tr from-cyan-100 to-sky-100 dark:from-cyan-950 dark:to-sky-950 text-cyan-600 dark:text-cyan-400 text-3xl shadow-inner mb-4">
                     🦐
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900">
-                    Xin chào! Tôi là Trợ lý AI Thủy sản shrimpAI
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t("botWelcome").split(".")[0] || "Trợ lý AI Thủy sản shrimpAI"}
                   </h3>
-                  <p className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-md">
-                    Bạn có thể hỏi tôi bất kỳ điều gì về giống tôm thẻ, tôm sú, tôm càng xanh,
-                    chẩn đoán bệnh học, hoặc kỹ thuật quản lý môi trường nước ao nuôi.
+                  <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md">
+                    {t("botWelcome")}
                   </p>
 
                   {/* Suggestions Grid */}
@@ -381,15 +382,15 @@ export default function ChatPage() {
                             sendMessageToSession(activeSessionId, sug.prompt);
                           }
                         }}
-                        className="group flex flex-col p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-cyan-400 hover:bg-cyan-50/30 hover:shadow-sm transition duration-200 cursor-pointer text-left"
+                        className="group flex flex-col p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 hover:border-cyan-400 dark:hover:border-cyan-500 hover:bg-cyan-50/30 dark:hover:bg-slate-800/80 hover:shadow-sm transition duration-200 cursor-pointer text-left"
                       >
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-lg">{sug.icon}</span>
-                          <span className="text-xs font-bold text-slate-800 group-hover:text-cyan-800 transition">
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200 group-hover:text-cyan-800 dark:group-hover:text-cyan-400 transition">
                             {sug.title}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
                           {sug.prompt}
                         </p>
                       </button>
@@ -406,7 +407,7 @@ export default function ChatPage() {
                     }`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-cyan-100 to-teal-100 text-cyan-700 text-lg shadow-xs ring-1 ring-cyan-200/50">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-cyan-100 to-teal-100 dark:from-cyan-950 dark:to-teal-950 text-cyan-700 dark:text-cyan-300 text-lg shadow-xs ring-1 ring-cyan-200/50 dark:ring-cyan-800/50">
                         🦐
                       </div>
                     )}
@@ -415,7 +416,7 @@ export default function ChatPage() {
                       className={`relative group max-w-2xl rounded-2xl p-4 text-xs leading-relaxed shadow-xs ${
                         msg.role === "user"
                           ? "bg-gradient-to-r from-cyan-600 to-teal-600 text-white font-medium"
-                          : "bg-slate-50/90 text-slate-800 border border-slate-200/90"
+                          : "bg-slate-50/90 dark:bg-[#0f172a] text-slate-800 dark:text-slate-200 border border-slate-200/90 dark:border-slate-800"
                       }`}
                     >
                       {msg.role === "user" ? (
@@ -426,81 +427,81 @@ export default function ChatPage() {
                             remarkPlugins={[remarkGfm]}
                             components={{
                               table: ({ ...props }) => (
-                                <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 shadow-xs">
+                                <div className="overflow-x-auto my-3 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
                                   <table
-                                    className="min-w-full divide-y divide-slate-200 text-xs text-left"
+                                    className="min-w-full divide-y divide-slate-200 dark:divide-slate-800 text-xs text-left"
                                     {...props}
                                   />
                                 </div>
                               ),
                               thead: ({ ...props }) => (
                                 <thead
-                                  className="bg-gradient-to-r from-cyan-50 to-teal-50 text-slate-800 font-bold"
+                                  className="bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-950/60 dark:to-teal-950/60 text-slate-800 dark:text-slate-200 font-bold"
                                   {...props}
                                 />
                               ),
                               th: ({ ...props }) => (
                                 <th
-                                  className="px-3 py-2 font-bold text-cyan-900 border-b border-cyan-100 whitespace-nowrap"
+                                  className="px-3 py-2 font-bold text-cyan-900 dark:text-cyan-300 border-b border-cyan-100 dark:border-cyan-900/60 whitespace-nowrap"
                                   {...props}
                                 />
                               ),
                               td: ({ ...props }) => (
                                 <td
-                                  className="px-3 py-1.5 text-slate-700 border-b border-slate-100"
+                                  className="px-3 py-1.5 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/60"
                                   {...props}
                                 />
                               ),
                               h3: ({ ...props }) => (
                                 <h3
-                                  className="text-sm font-bold text-cyan-900 mt-2.5 mb-1 flex items-center gap-1.5"
+                                  className="text-sm font-bold text-cyan-900 dark:text-cyan-300 mt-2.5 mb-1 flex items-center gap-1.5"
                                   {...props}
                                 />
                               ),
                               h4: ({ ...props }) => (
                                 <h4
-                                  className="text-xs font-bold text-teal-800 mt-2 mb-1"
+                                  className="text-xs font-bold text-teal-800 dark:text-teal-300 mt-2 mb-1"
                                   {...props}
                                 />
                               ),
                               ul: ({ ...props }) => (
                                 <ul
-                                  className="list-disc pl-5 my-1.5 space-y-1 text-slate-700"
+                                  className="list-disc pl-5 my-1.5 space-y-1 text-slate-700 dark:text-slate-300"
                                   {...props}
                                 />
                               ),
                               ol: ({ ...props }) => (
                                 <ol
-                                  className="list-decimal pl-5 my-1.5 space-y-1 text-slate-700"
+                                  className="list-decimal pl-5 my-1.5 space-y-1 text-slate-700 dark:text-slate-300"
                                   {...props}
                                 />
                               ),
                               li: ({ ...props }) => <li className="leading-relaxed" {...props} />,
                               blockquote: ({ ...props }) => (
                                 <blockquote
-                                  className="my-2.5 rounded-xl border-l-4 border-cyan-500 bg-cyan-50/70 p-3 text-xs text-slate-700 italic shadow-xs"
+                                  className="my-2.5 rounded-xl border-l-4 border-cyan-500 bg-cyan-50/70 dark:bg-cyan-950/40 p-3 text-xs text-slate-700 dark:text-slate-300 italic shadow-xs"
                                   {...props}
                                 />
                               ),
                               code: ({ inline, children, ...props }: any) => {
                                 return inline ? (
                                   <code
-                                    className="rounded bg-slate-200/80 px-1 py-0.5 font-mono text-[11px] text-cyan-800 font-semibold"
+                                    className="rounded bg-slate-200/80 dark:bg-slate-800 px-1 py-0.5 font-mono text-[11px] text-cyan-800 dark:text-cyan-300 font-semibold"
                                     {...props}
                                   >
                                     {children}
                                   </code>
                                 ) : (
-                                  <pre className="my-2 overflow-x-auto rounded-xl bg-slate-900 p-3 font-mono text-xs text-slate-100">
+                                  <pre className="my-2 overflow-x-auto rounded-xl bg-slate-900 dark:bg-slate-950 p-3 font-mono text-xs text-slate-100">
                                     <code {...props}>{children}</code>
                                   </pre>
                                 );
                               },
                               p: ({ ...props }) => (
-                                <p className="leading-relaxed my-1.5 text-slate-700" {...props} />
+                                <p className="leading-relaxed my-1.5 text-slate-700 dark:text-slate-300" {...props} />
                               ),
                               strong: ({ ...props }) => (
-                                <strong className="font-bold text-slate-900" {...props} />
+                                <strong className="font-bold text-slate-900 dark:text-white" {...props} />
                               ),
                             }}
                           >
@@ -508,7 +509,7 @@ export default function ChatPage() {
                           </ReactMarkdown>
 
                           {/* Message Actions */}
-                          <div className="mt-2 pt-2 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-400">
+                          <div className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-800 flex items-center justify-between text-[10px] text-slate-400">
                             <span>
                               {new Date(msg.createdAt).toLocaleTimeString([], {
                                 hour: "2-digit",
@@ -518,7 +519,7 @@ export default function ChatPage() {
                             <button
                               type="button"
                               onClick={() => copyMessage(msg.id, msg.content)}
-                              className="inline-flex items-center gap-1 rounded px-2 py-0.5 hover:bg-slate-200/60 hover:text-slate-700 transition cursor-pointer"
+                              className="inline-flex items-center gap-1 rounded px-2 py-0.5 hover:bg-slate-200/60 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300 transition cursor-pointer"
                               title="Sao chép nội dung"
                             >
                               {copiedId === msg.id ? "✓ Đã sao chép" : "📋 Sao chép"}
@@ -529,7 +530,7 @@ export default function ChatPage() {
                     </div>
 
                     {msg.role === "user" && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-200 text-slate-700 font-bold text-xs shadow-xs">
+                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs shadow-xs">
                         Tôi
                       </div>
                     )}
@@ -540,10 +541,10 @@ export default function ChatPage() {
               {/* AI Typing Indicator */}
               {isSending && (
                 <div className="flex gap-3 justify-start items-center">
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 text-cyan-700 text-lg ring-1 ring-cyan-200/50">
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 text-lg ring-1 ring-cyan-200/50 dark:ring-cyan-800/50">
                     🦐
                   </div>
-                  <div className="rounded-2xl border border-cyan-200 bg-cyan-50/50 px-4 py-3 text-xs text-cyan-800 flex items-center gap-2 shadow-xs">
+                  <div className="rounded-2xl border border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-950/40 px-4 py-3 text-xs text-cyan-800 dark:text-cyan-300 flex items-center gap-2 shadow-xs">
                     <Spinner className="h-4 w-4 text-cyan-600" />
                     <span className="font-semibold">shrimpAI đang xử lý câu trả lời...</span>
                   </div>
@@ -556,7 +557,7 @@ export default function ChatPage() {
 
           {/* Quick suggestions pills when conversation is active */}
           {messages.length > 0 && (
-            <div className="px-4 py-1.5 bg-slate-50 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <div className="px-4 py-1.5 bg-slate-50 dark:bg-[#090d16] border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto no-scrollbar">
               <span className="text-[10px] font-semibold text-slate-400 whitespace-nowrap">
                 Gợi ý nhanh:
               </span>
@@ -569,7 +570,7 @@ export default function ChatPage() {
                       sendMessageToSession(activeSessionId, chip);
                     }
                   }}
-                  className="rounded-full bg-white border border-slate-200 px-2.5 py-1 text-[11px] text-slate-600 hover:border-cyan-400 hover:text-cyan-700 hover:bg-cyan-50/40 transition whitespace-nowrap cursor-pointer shadow-2xs"
+                  className="rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 text-[11px] text-slate-600 dark:text-slate-300 hover:border-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 hover:bg-cyan-50/40 dark:hover:bg-slate-700/60 transition whitespace-nowrap cursor-pointer shadow-2xs"
                 >
                   {chip}
                 </button>
@@ -578,16 +579,16 @@ export default function ChatPage() {
           )}
 
           {/* Bottom Chat Input Bar */}
-          <div className="border-t border-slate-200 bg-white p-3 sm:p-4">
-            <div className="max-w-3xl mx-auto flex items-end gap-2 rounded-2xl border border-slate-300 bg-slate-50/60 p-2 focus-within:border-cyan-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-cyan-500/20 transition shadow-inner">
+          <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] p-3 sm:p-4 transition-colors">
+            <div className="max-w-3xl mx-auto flex items-end gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/90 p-2 focus-within:border-cyan-500 focus-within:bg-white dark:focus-within:bg-slate-900 focus-within:ring-2 focus-within:ring-cyan-500/20 transition shadow-inner">
               <textarea
                 ref={textareaRef}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Nhập câu hỏi về giống tôm, bệnh học hoặc môi trường nước ao nuôi... (Enter để gửi)"
+                placeholder={t("chatPlaceholder")}
                 rows={1}
-                className="flex-1 max-h-36 resize-none bg-transparent p-2 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none leading-relaxed"
+                className="flex-1 max-h-36 resize-none bg-transparent p-2 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none leading-relaxed"
                 style={{
                   minHeight: "40px",
                 }}
@@ -597,7 +598,7 @@ export default function ChatPage() {
                 onClick={handleSend}
                 disabled={!inputText.trim() || isSending}
                 className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 text-white shadow-sm hover:from-cyan-700 hover:to-teal-700 transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-                title="Gửi câu hỏi"
+                title={t("sendBtn")}
               >
                 {isSending ? (
                   <Spinner className="h-4 w-4 text-white" />
@@ -620,14 +621,14 @@ export default function ChatPage() {
           onClick={() => !isDeletingSession && setSessionToDelete(null)}
         >
           <div
-            className="relative w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-3xl bg-white p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-150"
+            className="relative w-full max-w-sm sm:max-w-md rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0f172a] p-6 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in zoom-in-95 duration-150"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
               Xóa đoạn chat?
             </h3>
-            <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Hành động này sẽ xóa <strong className="font-semibold text-slate-900">{sessionToDelete.title}</strong>.
+            <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Hành động này sẽ xóa <strong className="font-semibold text-slate-900 dark:text-white">{sessionToDelete.title}</strong>.
             </p>
 
             <div className="mt-6 flex items-center justify-end gap-2.5">
@@ -635,7 +636,7 @@ export default function ChatPage() {
                 type="button"
                 disabled={isDeletingSession}
                 onClick={() => setSessionToDelete(null)}
-                className="rounded-full border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 cursor-pointer"
+                className="rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition disabled:opacity-50 cursor-pointer"
               >
                 Hủy bỏ
               </button>

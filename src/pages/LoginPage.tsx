@@ -8,13 +8,14 @@ import { OAuthButtons } from "../components/auth/OAuthButtons";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
 import { useAuthStore } from "../store/auth.store";
+import { useI18nStore } from "../store/i18n.store";
 
 export default function LoginPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { applyResult, notice, setNotice } = useAuthStore();
+  const { t } = useI18nStore();
 
-  // Khởi tạo state error trực tiếp từ params, bỏ hoàn toàn useEffect
   const [error, setError] = useState(() => {
     const oauthErr = params.get("error");
     return oauthErr ? decodeURIComponent(oauthErr) : "";
@@ -54,16 +55,16 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      title="Đăng nhập"
-      subtitle="Truy cập tài khoản của bạn một cách an toàn"
+      title={t("loginTitle")}
+      subtitle={t("loginSubtitle")}
       footer={
         <>
-          Chưa có tài khoản?{" "}
+          {t("noAccount")}{" "}
           <Link
             to="/register"
-            className="font-semibold text-brand-600 hover:underline"
+            className="font-semibold text-cyan-600 hover:text-cyan-500 hover:underline"
           >
-            Đăng ký ngay
+            {t("registerNow")}
           </Link>
         </>
       }
@@ -81,7 +82,7 @@ export default function LoginPage() {
         )}
 
         <Field
-          label="Email"
+          label={t("emailLabel")}
           type="email"
           name="email"
           autoComplete="email"
@@ -92,7 +93,7 @@ export default function LoginPage() {
         />
 
         <Field
-          label="Mật khẩu"
+          label={t("passwordLabel")}
           type="password"
           name="password"
           autoComplete="current-password"
@@ -104,19 +105,19 @@ export default function LoginPage() {
 
         <button type="submit" disabled={loading} className="btn-primary">
           {loading && <Spinner />}
-          {loading ? "Đang xử lý…" : "Đăng nhập"}
+          {loading ? "..." : t("loginBtn")}
         </button>
       </form>
 
       <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" />
-        hoặc
-        <span className="h-px flex-1 bg-slate-200" />
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        {t("orSocial")}
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
       </div>
 
       <OAuthButtons disabled={loading} />
 
-      <p className="mt-5 rounded-xl bg-slate-50 px-3.5 py-3 text-xs leading-relaxed text-slate-500">
+      <p className="mt-5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 px-3.5 py-3 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
         🔒 Mỗi tài khoản chỉ hoạt động trên <b>một thiết bị</b> tại một thời
         điểm. Đăng nhập thiết bị mới sẽ tự động đăng xuất các thiết bị còn lại.
       </p>

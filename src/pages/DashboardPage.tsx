@@ -5,6 +5,7 @@ import shrimpSampleImg from "../assets/shrimp_sample.jpg";
 import shrimpBlackTigerImg from "../assets/shrimp_black_tiger.jpg";
 import shrimpGiantPrawnImg from "../assets/shrimp_giant_prawn.jpg";
 import logoImg from "../assets/Logo.png";
+import { useI18nStore } from "../store/i18n.store";
 
 interface OutletContextType {
   openAnalysisModal: () => void;
@@ -51,6 +52,7 @@ const heroShrimpSlides = [
 
 export default function DashboardPage() {
   const { openAnalysisModal } = useOutletContext<OutletContextType>();
+  const { t } = useI18nStore();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -75,31 +77,25 @@ export default function DashboardPage() {
   return (
     <div className="space-y-16 sm:space-y-24">
       {/* ════════════════════════ HERO SECTION ════════════════════════ */}
-      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 bg-gradient-to-b from-cyan-50/70 via-sky-50/40 to-transparent">
+      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 bg-gradient-to-b from-cyan-50/70 via-sky-50/40 to-transparent dark:from-cyan-950/20 dark:via-sky-950/10 dark:to-transparent">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-12">
             {/* Left Content */}
             <div className="lg:col-span-6 space-y-6">
               {/* Category Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-cyan-100/80 px-3.5 py-1.5 text-xs font-bold text-cyan-800 backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full bg-cyan-100/80 dark:bg-cyan-900/60 px-3.5 py-1.5 text-xs font-bold text-cyan-800 dark:text-cyan-300 backdrop-blur">
                 <span className="h-2 w-2 rounded-full bg-cyan-500 animate-pulse" />
-                AI • Xử lý ảnh • Thủy sản
+                {t("heroBadge")}
               </div>
 
               {/* Main Heading */}
-              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl leading-[1.15]">
-                Nhận dạng và <br />
-                phân loại tôm <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-sky-600 to-teal-600">
-                  bằng AI
-                </span>
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl leading-[1.15]">
+                {t("heroTitle")}
               </h1>
 
               {/* Description */}
-              <p className="text-base text-slate-600 sm:text-lg leading-relaxed max-w-xl">
-                Chỉ cần tải lên hình ảnh tôm, hệ thống của chúng tôi sẽ sử dụng
-                công nghệ xử lý ảnh và học sâu (Deep Learning) để nhận dạng và
-                phân loại chính xác giống tôm.
+              <p className="text-base text-slate-600 dark:text-slate-300 sm:text-lg leading-relaxed max-w-xl">
+                {t("heroSubtitle")}
               </p>
 
               {/* Action Buttons */}
@@ -115,13 +111,13 @@ export default function DashboardPage() {
                   >
                     <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242M12 12v9m-4-4 4-4 4 4" />
                   </svg>
-                  <span>Phân tích ngay</span>
+                  <span>{t("scanNowBtn")}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => scrollToSection("steps")}
-                  className="btn-outline-modern"
+                  className="btn-outline-modern dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-200"
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -129,7 +125,7 @@ export default function DashboardPage() {
                   >
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
-                  <span>Xem cách hoạt động</span>
+                  <span>{t("viewHistoryBtn")}</span>
                 </button>
               </div>
             </div>
@@ -144,7 +140,7 @@ export default function DashboardPage() {
                 <div
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
-                  className="relative overflow-hidden rounded-3xl border border-white/80 bg-white/95 p-3.5 shadow-2xl backdrop-blur card-hover-lift group"
+                  className="relative overflow-hidden rounded-3xl border border-white/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 p-3.5 shadow-2xl backdrop-blur card-hover-lift group"
                 >
                   <div className="relative rounded-2xl overflow-hidden bg-slate-950 aspect-[4/3] select-none">
                     {/* Rotating Shrimp Slide Images */}
@@ -226,7 +222,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Floating Result Badge at Top-Right (with gentle floating animation) */}
-                  <div className="absolute top-6 right-6 flex items-center gap-3 rounded-2xl bg-white/95 px-4 py-2.5 shadow-xl border border-slate-100 backdrop-blur badge-floating z-30 transition-all duration-300">
+                  <div className="absolute top-6 right-6 flex items-center gap-3 rounded-2xl bg-white/95 dark:bg-slate-900/95 px-4 py-2.5 shadow-xl border border-slate-100 dark:border-slate-800 backdrop-blur badge-floating z-30 transition-all duration-300">
                     <img
                       src={currentSlide.thumb}
                       alt={currentSlide.name}
@@ -235,17 +231,17 @@ export default function DashboardPage() {
                     <div>
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                          Kết quả nhận dạng
+                          {t("resultTitle")}
                         </p>
-                        <span className="rounded-full bg-emerald-100 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
+                        <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700 dark:text-emerald-400">
                           {currentSlide.statusBadge}
                         </span>
                       </div>
-                      <p className="text-xs font-black text-slate-900">
+                      <p className="text-xs font-black text-slate-900 dark:text-white">
                         {currentSlide.name}
                       </p>
-                      <p className="text-[11px] font-bold text-emerald-600">
-                        Độ tin cậy {currentSlide.confidence}
+                      <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                        {t("confidence")} {currentSlide.confidence}
                       </p>
                     </div>
                   </div>
@@ -261,7 +257,7 @@ export default function DashboardPage() {
                           className={`flex items-center gap-1.5 rounded-xl px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
                             idx === currentSlideIndex
                               ? "bg-cyan-600 text-white shadow-sm shadow-cyan-500/30 scale-105"
-                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                           }`}
                         >
                           <span>{slide.icon}</span>
@@ -279,7 +275,7 @@ export default function DashboardPage() {
                           type="button"
                           onClick={() => setCurrentSlideIndex(idx)}
                           className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                            idx === currentSlideIndex ? "w-6 bg-cyan-600" : "w-1.5 bg-slate-300 hover:bg-slate-400"
+                            idx === currentSlideIndex ? "w-6 bg-cyan-600" : "w-1.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400"
                           }`}
                           aria-label={`Slide ${idx + 1}`}
                         />
@@ -295,56 +291,56 @@ export default function DashboardPage() {
 
       {/* ════════════════════════ TRUST / STATS BAR ════════════════════════ */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-12 relative z-20">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 rounded-3xl border border-slate-200/80 bg-white/95 p-6 shadow-xl backdrop-blur sm:p-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 p-6 shadow-xl backdrop-blur sm:p-8">
           {/* Stat 1 */}
           <div className="flex items-center gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-cyan-600 text-2xl">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-cyan-600 dark:text-cyan-400 text-2xl">
               ⚙️
             </div>
             <div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base">
+              <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
                 AI Vision
               </p>
-              <p className="text-xs text-slate-500">Công nghệ xử lý ảnh hiện đại</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Công nghệ xử lý ảnh hiện đại</p>
             </div>
           </div>
 
           {/* Stat 2 */}
           <div className="flex items-center gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-50 text-emerald-600 text-2xl">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 text-2xl">
               🎯
             </div>
             <div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base">
+              <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
                 96.8%
               </p>
-              <p className="text-xs text-slate-500">Độ tin cậy</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t("confidence")}</p>
             </div>
           </div>
 
           {/* Stat 3 */}
           <div className="flex items-center gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 text-blue-600 text-2xl">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-2xl">
               🖼️
             </div>
             <div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base">
+              <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
                 Phân tích hình ảnh
               </p>
-              <p className="text-xs text-slate-500">Nhanh chóng, chính xác</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Nhanh chóng, chính xác</p>
             </div>
           </div>
 
           {/* Stat 4 */}
           <div className="flex items-center gap-4">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-indigo-50 text-indigo-600 text-2xl">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-2xl">
               ⚡
             </div>
             <div>
-              <p className="font-bold text-slate-900 text-sm sm:text-base">
+              <p className="font-bold text-slate-900 dark:text-white text-sm sm:text-base">
                 Kết quả tức thì
               </p>
-              <p className="text-xs text-slate-500">Tiết kiệm thời gian</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Tiết kiệm thời gian</p>
             </div>
           </div>
         </div>
@@ -353,13 +349,13 @@ export default function DashboardPage() {
       {/* ════════════════════════ FEATURES SECTION ════════════════════════ */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center space-y-12">
         <div className="space-y-3">
-          <span className="text-xs font-black tracking-wider uppercase text-cyan-600">
+          <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
             TÍNH NĂNG NỔI BẬT
           </span>
-          <h2 className="text-2xl font-black text-slate-900 sm:text-3xl lg:text-4xl">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl lg:text-4xl">
             Phân tích thông minh từ hình ảnh
           </h2>
-          <p className="mx-auto max-w-2xl text-sm text-slate-500 sm:text-base">
+          <p className="mx-auto max-w-2xl text-sm text-slate-500 dark:text-slate-400 sm:text-base">
             Ứng dụng công nghệ AI để giúp bạn nhận dạng, phân loại và quản lý
             thông tin về các giống tôm một cách nhanh chóng, chính xác và hiệu quả.
           </p>
@@ -367,42 +363,42 @@ export default function DashboardPage() {
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 text-left">
           {/* Feature Card 1 */}
-          <div className="card-hover-lift p-8 group cursor-pointer">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-cyan-50 text-cyan-600 text-2xl mb-6 group-hover:scale-110 transition duration-300">
+          <div className="card-hover-lift p-8 group cursor-pointer dark:bg-slate-900 dark:border-slate-800">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 text-2xl mb-6 group-hover:scale-110 transition duration-300">
               🦐
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-cyan-700 transition">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
               Nhận dạng giống tôm
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Phân biệt chính xác các giống tôm phổ biến như: tôm thẻ chân trắng,
-              tôm sú, tôm càng xanh,...
+              tôm sú, tôm càng xanh, tôm hùm...
             </p>
           </div>
 
           {/* Feature Card 2 */}
-          <div className="card-hover-lift p-8 group cursor-pointer">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-sky-50 text-sky-600 text-2xl mb-6 group-hover:scale-110 transition duration-300">
+          <div className="card-hover-lift p-8 group cursor-pointer dark:bg-slate-900 dark:border-slate-800">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 text-2xl mb-6 group-hover:scale-110 transition duration-300">
               🧠
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-cyan-700 transition">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
               Phân loại bằng AI
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Sử dụng mô hình học sâu (Deep Learning) để đạt độ chính xác cao trong
               việc phân loại.
             </p>
           </div>
 
           {/* Feature Card 3 */}
-          <div className="card-hover-lift p-8 group cursor-pointer">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-indigo-50 text-indigo-600 text-2xl mb-6 group-hover:scale-110 transition duration-300">
+          <div className="card-hover-lift p-8 group cursor-pointer dark:bg-slate-900 dark:border-slate-800">
+            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 text-2xl mb-6 group-hover:scale-110 transition duration-300">
               🗄️
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-cyan-700 transition">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-400 transition">
               Lưu lịch sử phân tích
             </h3>
-            <p className="text-sm text-slate-500 leading-relaxed">
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
               Lưu trữ kết quả và hình ảnh để theo dõi, tra cứu và quản lý dễ dàng.
             </p>
           </div>
@@ -411,15 +407,15 @@ export default function DashboardPage() {
 
       {/* ════════════════════════ LIVE EXPERIENCE / UPLOAD DEMO ════════════════════════ */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-sky-100 bg-gradient-to-b from-sky-50/50 to-white p-6 sm:p-10 lg:p-12 shadow-sm space-y-8">
+        <div className="rounded-3xl border border-sky-100 dark:border-slate-800 bg-gradient-to-b from-sky-50/50 to-white dark:from-slate-900/60 dark:to-slate-900/90 p-6 sm:p-10 lg:p-12 shadow-sm space-y-8">
           <div className="space-y-2">
-            <span className="text-xs font-black tracking-wider uppercase text-cyan-600">
+            <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
               TRẢI NGHIỆM NGAY
             </span>
-            <h2 className="text-2xl font-black text-slate-900 sm:text-3xl">
+            <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
               Phân tích tôm chỉ với vài bước
             </h2>
-            <p className="text-sm text-slate-500 max-w-2xl">
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
               Tải lên hình ảnh tôm, hệ thống sẽ tự động xử lý và trả về kết quả
               nhận dạng giống tôm cùng độ tin cậy.
             </p>
@@ -430,7 +426,7 @@ export default function DashboardPage() {
             <div className="lg:col-span-6">
               <div
                 onClick={openAnalysisModal}
-                className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-cyan-300 bg-white/90 p-8 sm:p-12 text-center cursor-pointer transition-all duration-300 hover:border-cyan-500 hover:bg-white hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1 group"
+                className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-cyan-300 dark:border-cyan-800 bg-white/90 dark:bg-slate-900/90 p-8 sm:p-12 text-center cursor-pointer transition-all duration-300 hover:border-cyan-500 hover:bg-white dark:hover:bg-slate-900 hover:shadow-xl hover:shadow-cyan-500/10 hover:-translate-y-1 group"
               >
                 {/* Shrimp Sample Preview for Upload */}
                 <div className="relative mb-4">
@@ -485,9 +481,9 @@ export default function DashboardPage() {
 
             {/* Right: Live Sample Analysis Result Card with Hover Lift */}
             <div className="lg:col-span-6">
-              <div className="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xl card-hover-lift img-container-zoom">
+              <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 sm:p-7 shadow-xl card-hover-lift img-container-zoom">
                 <div className="grid sm:grid-cols-12 gap-5 items-center">
-                  <div className="sm:col-span-5 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 aspect-square">
+                  <div className="sm:col-span-5 rounded-2xl overflow-hidden bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 aspect-square">
                     <img
                       src={shrimpSampleImg}
                       alt="Tôm thẻ chân trắng"
@@ -497,13 +493,13 @@ export default function DashboardPage() {
                   <div className="sm:col-span-7 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-medium text-slate-400">
-                        Kết quả phân tích
+                        {t("resultTitle")}
                       </span>
-                      <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
                         Đã nhận dạng
                       </span>
                     </div>
-                    <h3 className="text-xl font-black text-slate-900">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white">
                       Tôm thẻ chân trắng
                     </h3>
                     <p className="text-xs font-medium italic text-slate-400">
@@ -512,10 +508,10 @@ export default function DashboardPage() {
 
                     <div className="pt-2">
                       <div className="flex justify-between text-xs font-bold mb-1">
-                        <span className="text-slate-600">Độ tin cậy</span>
-                        <span className="text-emerald-600">96.8%</span>
+                        <span className="text-slate-600 dark:text-slate-300">{t("confidence")}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400">96.8%</span>
                       </div>
-                      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                         <div
                           className="h-full rounded-full bg-emerald-500 transition-all duration-1000"
                           style={{ width: '96.8%' }}
@@ -525,41 +521,41 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-5 border-t border-slate-100 space-y-2">
-                  <p className="text-xs font-bold text-slate-700">Thông tin phân tích</p>
+                <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Thông tin phân tích</p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-500">
+                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                       <span>🦐</span> Loài tôm
                     </div>
-                    <div className="font-semibold text-slate-800 text-right">
+                    <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
                       Tôm thẻ chân trắng
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-slate-500">
-                      <span>🎯</span> Độ tin cậy
+                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                      <span>🎯</span> {t("confidence")}
                     </div>
-                    <div className="font-semibold text-slate-800 text-right">
+                    <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
                       96.8%
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-slate-500">
+                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                       <span>⏱️</span> Thời gian phân tích
                     </div>
-                    <div className="font-semibold text-slate-800 text-right">
+                    <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
                       12.4 giây
                     </div>
 
-                    <div className="flex items-center gap-1.5 text-slate-500">
+                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                       <span>📐</span> Kích thước ảnh
                     </div>
-                    <div className="font-semibold text-slate-800 text-right">
+                    <div className="font-semibold text-slate-800 dark:text-slate-200 text-right">
                       1024 x 768 px
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-4 rounded-xl bg-emerald-50/70 p-3 text-[11px] text-emerald-800 flex items-start gap-2">
-                  <span className="text-emerald-600 font-bold">✓</span>
+                <div className="mt-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 p-3 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-2">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓</span>
                   <span>
                     Kết quả được dựa trên mô hình AI và có thể thay đổi tùy theo chất
                     lượng hình ảnh.
@@ -574,13 +570,13 @@ export default function DashboardPage() {
       {/* ════════════════════════ HOW IT WORKS (3 STEPS) ════════════════════════ */}
       <section id="steps" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12">
         <div className="space-y-3 text-center">
-          <span className="text-xs font-black tracking-wider uppercase text-cyan-600">
+          <span className="text-xs font-black tracking-wider uppercase text-cyan-600 dark:text-cyan-400">
             QUY TRÌNH HOẠT ĐỘNG
           </span>
-          <h2 className="text-2xl font-black text-slate-900 sm:text-3xl">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
             Chỉ 3 bước đơn giản
           </h2>
-          <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
             Hệ thống shrimpAI tự động hoá toàn bộ quy trình từ tải ảnh, xử lý dữ liệu thị giác đến trả kết quả định danh tức thì.
           </p>
         </div>
@@ -589,7 +585,7 @@ export default function DashboardPage() {
           {/* Step 1: Tải ảnh tôm */}
           <div
             onClick={openAnalysisModal}
-            className="process-card process-card-hover border border-slate-200/90 bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-cyan-400 cursor-pointer group flex flex-col justify-between"
+            className="process-card process-card-hover border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-cyan-400 dark:hover:border-cyan-500 cursor-pointer group flex flex-col justify-between"
           >
             <div>
               {/* Header: Step badge & Tag */}
@@ -597,13 +593,13 @@ export default function DashboardPage() {
                 <div className="step-badge flex items-center justify-center h-10 w-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-cyan-700 text-white font-black text-sm shadow-md shadow-cyan-500/30">
                   01
                 </div>
-                <span className="rounded-full bg-cyan-50 text-cyan-700 text-[11px] font-bold px-3 py-1 border border-cyan-100/80">
+                <span className="rounded-full bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 text-[11px] font-bold px-3 py-1 border border-cyan-100/80 dark:border-cyan-800/80">
                   Tải dữ liệu
                 </span>
               </div>
 
               {/* Visual with shrimp_sample.jpg */}
-              <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-inner group-hover:border-cyan-300 transition-colors">
+              <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 shadow-inner group-hover:border-cyan-300 transition-colors">
                 <img
                   src={shrimpSampleImg}
                   alt="Tải ảnh tôm"
@@ -611,8 +607,8 @@ export default function DashboardPage() {
                 />
                 {/* Upload overlay frame */}
                 <div className="absolute inset-3 rounded-xl border-2 border-dashed border-cyan-400/70 pointer-events-none group-hover:border-cyan-400 transition-colors" />
-                <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-lg bg-white/95 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-slate-700 shadow-sm border border-slate-200/60">
-                  <svg className="h-3.5 w-3.5 text-cyan-600 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+                <div className="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-lg bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:text-slate-300 shadow-sm border border-slate-200/60 dark:border-slate-700">
+                  <svg className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
@@ -628,16 +624,16 @@ export default function DashboardPage() {
               </div>
 
               <div className="mt-5 space-y-1.5">
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
                   1. Tải ảnh tôm
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Tải lên ảnh chụp rõ nét tôm thương phẩm hoặc chụp trực tiếp tại bờ ao bằng camera di động.
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-[11px] font-semibold text-cyan-600 group-hover:translate-x-1 transition-transform">
+            <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">
               <span>Trải nghiệm tải ảnh ngay</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -649,7 +645,7 @@ export default function DashboardPage() {
           {/* Step 2: AI phân tích */}
           <div
             onClick={openAnalysisModal}
-            className="process-card process-card-hover border border-slate-200/90 bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-teal-400 cursor-pointer group flex flex-col justify-between"
+            className="process-card process-card-hover border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-teal-400 dark:hover:border-teal-500 cursor-pointer group flex flex-col justify-between"
           >
             <div>
               {/* Header: Step badge & Tag */}
@@ -657,7 +653,7 @@ export default function DashboardPage() {
                 <div className="step-badge flex items-center justify-center h-10 w-10 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-700 text-white font-black text-sm shadow-md shadow-teal-500/30">
                   02
                 </div>
-                <span className="rounded-full bg-teal-50 text-teal-700 text-[11px] font-bold px-3 py-1 border border-teal-100/80 flex items-center gap-1.5">
+                <span className="rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-[11px] font-bold px-3 py-1 border border-teal-100/80 dark:border-teal-800/80 flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-teal-500 animate-ping" />
                   AI Vision
                 </span>
@@ -693,16 +689,16 @@ export default function DashboardPage() {
               </div>
 
               <div className="mt-5 space-y-1.5">
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-teal-600 transition-colors">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                   2. AI phân tích
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Mô hình AI đa tầng bóc tách cấu trúc vỏ, gai chủy, cuống mắt và phân tích hình thái học độ chính xác cao.
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-[11px] font-semibold text-teal-600 group-hover:translate-x-1 transition-transform">
+            <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-teal-600 dark:text-teal-400 group-hover:translate-x-1 transition-transform">
               <span>Xem mô phỏng quét AI</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -714,7 +710,7 @@ export default function DashboardPage() {
           {/* Step 3: Nhận kết quả */}
           <div
             onClick={openAnalysisModal}
-            className="process-card process-card-hover border border-slate-200/90 bg-white rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-emerald-400 cursor-pointer group flex flex-col justify-between"
+            className="process-card process-card-hover border border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:border-emerald-400 dark:hover:border-emerald-500 cursor-pointer group flex flex-col justify-between"
           >
             <div>
               {/* Header: Step badge & Tag */}
@@ -722,13 +718,13 @@ export default function DashboardPage() {
                 <div className="step-badge flex items-center justify-center h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-500/30">
                   03
                 </div>
-                <span className="rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-bold px-3 py-1 border border-emerald-100/80 flex items-center gap-1">
+                <span className="rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold px-3 py-1 border border-emerald-100/80 dark:border-emerald-800/80 flex items-center gap-1">
                   ✓ Độ tin cậy 96.8%
                 </span>
               </div>
 
               {/* Visual with shrimp_sample.jpg + Result Card Overlay */}
-              <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 border border-emerald-200/80 shadow-sm group-hover:border-emerald-300 transition-colors">
+              <div className="relative h-48 w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-emerald-200/80 dark:border-emerald-700 shadow-sm group-hover:border-emerald-300 transition-colors">
                 <img
                   src={shrimpSampleImg}
                   alt="Nhận kết quả"
@@ -748,12 +744,12 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Floating Bottom Card */}
-                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-white/95 backdrop-blur-md p-2.5 border border-emerald-200/90 shadow-md">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-800">
+                <div className="absolute bottom-3 inset-x-3 rounded-xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2.5 border border-emerald-200/90 dark:border-slate-800 shadow-md">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200">
                     <span>Tôm thẻ chân trắng</span>
-                    <span className="text-emerald-600 font-extrabold">96.8%</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-extrabold">96.8%</span>
                   </div>
-                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
                       style={{ width: '96.8%' }}
@@ -763,16 +759,16 @@ export default function DashboardPage() {
               </div>
 
               <div className="mt-5 space-y-1.5">
-                <h3 className="text-lg font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                   3. Nhận kết quả
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Nhận kết quả định danh giống tôm, tên khoa học, độ tin cậy và lưu tự động vào lịch sử phân tích.
                 </p>
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-slate-100 flex items-center gap-2 text-[11px] font-semibold text-emerald-600 group-hover:translate-x-1 transition-transform">
+            <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-2 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform">
               <span>Xem chi tiết báo cáo</span>
               <svg className="h-3.5 w-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -784,7 +780,7 @@ export default function DashboardPage() {
       </section>
 
       {/* ════════════════════════ FOOTER ════════════════════════ */}
-      <footer className="border-t border-slate-200 bg-white py-12">
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] py-12 transition-colors">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           {/* Logo & Description */}
           <div className="flex items-center gap-3">
@@ -794,32 +790,32 @@ export default function DashboardPage() {
               className="h-10 w-10 rounded-full object-contain ring-2 ring-cyan-500/20"
             />
             <div>
-              <span className="font-black text-slate-900 text-lg">
-                shrimp<span className="text-cyan-600">AI</span>
+              <span className="font-black text-slate-900 dark:text-white text-lg">
+                shrimp<span className="text-cyan-600 dark:text-cyan-400">AI</span>
               </span>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Hệ thống nhận dạng và phân loại tôm bằng xử lý ảnh và AI
               </p>
             </div>
           </div>
 
           {/* Nav Links */}
-          <div className="flex flex-wrap gap-6 text-xs font-semibold text-slate-600">
-            <a href="#home" className="hover:text-cyan-600">
-              Trang chủ
+          <div className="flex flex-wrap gap-6 text-xs font-semibold text-slate-600 dark:text-slate-400">
+            <a href="#home" className="hover:text-cyan-600 dark:hover:text-cyan-400">
+              {t("home")}
             </a>
             <button
               type="button"
               onClick={openAnalysisModal}
-              className="hover:text-cyan-600 cursor-pointer"
+              className="hover:text-cyan-600 dark:hover:text-cyan-400 cursor-pointer"
             >
-              Phân tích tôm
+              {t("analysis")}
             </button>
-            <a href="#history" className="hover:text-cyan-600">
-              Lịch sử
+            <a href="#history" className="hover:text-cyan-600 dark:hover:text-cyan-400">
+              {t("history")}
             </a>
-            <Link to="/about" className="hover:text-cyan-600">
-              Giới thiệu
+            <Link to="/about" className="hover:text-cyan-600 dark:hover:text-cyan-400">
+              {t("about")}
             </Link>
           </div>
 

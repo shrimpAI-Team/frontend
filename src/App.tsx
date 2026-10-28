@@ -17,6 +17,9 @@ import AboutPage from "./pages/AboutPage";
 import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
+import { useThemeStore } from "./store/theme.store";
+import { useI18nStore } from "./store/i18n.store";
+
 function RootRedirect() {
   const status = useAuthStore((s) => s.status);
   if (status === "loading") return null;
@@ -27,12 +30,16 @@ function RootRedirect() {
 export default function App() {
   const bootstrap = useAuthStore((s) => s.bootstrap);
   const forceLogout = useAuthStore((s) => s.forceLogout);
+  const initTheme = useThemeStore((s) => s.initTheme);
+  const initLang = useI18nStore((s) => s.initLang);
 
   useEffect(() => {
+    initTheme();
+    initLang();
     // Khi interceptor phát hiện phiên bị thu hồi ⇒ đẩy về guest kèm thông báo
     setSessionLostHandler(forceLogout);
     void bootstrap();
-  }, [bootstrap, forceLogout]);
+  }, [bootstrap, forceLogout, initTheme, initLang]);
 
   return (
     <BrowserRouter>

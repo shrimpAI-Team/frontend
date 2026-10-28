@@ -17,6 +17,105 @@ html, body {
   touch-action: manipulation;
 }
 
+/* ════════════════════════ DUAL-THEME ARCHITECTURE (DARK & LIGHT) ════════════════════════ */
+:root,
+[data-theme="light"],
+html.light {
+  --bg-app: #f8fafc;
+  --bg-header: rgba(255, 255, 255, 0.92);
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-highlight: rgba(6, 182, 212, 0.35);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --input-bg: #ffffff;
+  --btn-secondary-bg: rgba(0, 0, 0, 0.04);
+  --btn-secondary-hover: rgba(0, 0, 0, 0.08);
+  --modal-bg: #ffffff;
+  color-scheme: light;
+}
+
+[data-theme="dark"],
+html.dark {
+  --bg-app: #030712;
+  --bg-header: rgba(9, 13, 22, 0.92);
+  --bg-card: #0f172a;
+  --bg-card-hover: #1e293b;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-highlight: rgba(56, 189, 248, 0.25);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --input-bg: rgba(15, 23, 42, 0.95);
+  --btn-secondary-bg: rgba(255, 255, 255, 0.06);
+  --btn-secondary-hover: rgba(255, 255, 255, 0.12);
+  --modal-bg: #090d16;
+  color-scheme: dark;
+}
+
+html.dark body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+}
+
+html.dark .card {
+  background-color: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+html.dark .card-hover-lift {
+  background-color: var(--bg-card);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+html.dark .input {
+  background-color: var(--input-bg);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+html.dark .label {
+  color: var(--text-secondary);
+}
+
+html.dark .nav-tab-modern {
+  color: var(--text-secondary);
+}
+html.dark .nav-tab-modern:hover {
+  color: #38bdf8;
+  background-color: rgba(6, 182, 212, 0.12);
+}
+html.dark .nav-tab-active {
+  color: #38bdf8;
+  background-color: rgba(6, 182, 212, 0.18);
+}
+
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--btn-secondary-bg);
+  color: var(--text-primary);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.theme-toggle-btn:hover {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--border-highlight);
+  transform: translateY(-1px);
+}
+
+
 /* ════════════════════════ KEYFRAME ANIMATIONS ════════════════════════ */
 @keyframes floatGentle {
   0%, 100% {

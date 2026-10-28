@@ -7,6 +7,7 @@ import { Spinner } from "../components/ui/Spinner";
 import { OAuthButtons } from "../components/auth/OAuthButtons";
 import { authApi } from "../api/auth.api";
 import { apiError } from "../lib/api";
+import { useI18nStore } from "../store/i18n.store";
 
 const rules = (pw: string) => [
   { ok: pw.length >= 8, text: "Tối thiểu 8 ký tự" },
@@ -16,6 +17,7 @@ const rules = (pw: string) => [
 ];
 
 export default function RegisterPage() {
+  const { t } = useI18nStore();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -61,16 +63,16 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      title="Tạo tài khoản"
-      subtitle="Chỉ mất chưa tới một phút"
+      title={t("registerTitle")}
+      subtitle={t("registerSubtitle")}
       footer={
         <>
-          Đã có tài khoản?{" "}
+          {t("hasAccount")}{" "}
           <Link
             to="/login"
-            className="font-semibold text-brand-600 hover:underline"
+            className="font-semibold text-cyan-600 hover:text-cyan-500 hover:underline"
           >
-            Đăng nhập
+            {t("signInNow")}
           </Link>
         </>
       }
@@ -83,7 +85,7 @@ export default function RegisterPage() {
         )}
 
         <Field
-          label="Họ và tên"
+          label={t("nameLabel")}
           name="name"
           autoComplete="name"
           placeholder="Nguyễn Văn A"
@@ -92,20 +94,19 @@ export default function RegisterPage() {
         />
 
         <Field
-          label="Email"
+          label={t("emailLabel")}
           type="email"
           name="email"
           autoComplete="email"
           required
           placeholder="ban@example.com"
-          hint="Mã OTP xác thực sẽ được gửi tới email này"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         <div>
           <Field
-            label="Mật khẩu"
+            label={t("passwordLabel")}
             type="password"
             name="password"
             autoComplete="new-password"
@@ -115,7 +116,7 @@ export default function RegisterPage() {
           />
           {form.password && (
             <>
-              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${barColor}`}
                   style={{ width: `${(strength / 4) * 100}%` }}
@@ -125,7 +126,7 @@ export default function RegisterPage() {
                 {checks.map((c) => (
                   <li
                     key={c.text}
-                    className={c.ok ? "text-emerald-600" : "text-slate-400"}
+                    className={c.ok ? "text-emerald-500" : "text-slate-400"}
                   >
                     {c.ok ? "✓" : "○"} {c.text}
                   </li>
@@ -152,14 +153,14 @@ export default function RegisterPage() {
           className="btn-primary"
         >
           {loading && <Spinner />}
-          {loading ? "Đang tạo tài khoản…" : "Đăng ký"}
+          {loading ? "..." : t("registerBtn")}
         </button>
       </form>
 
       <div className="my-5 flex items-center gap-3 text-xs font-medium uppercase text-slate-400">
-        <span className="h-px flex-1 bg-slate-200" />
-        hoặc
-        <span className="h-px flex-1 bg-slate-200" />
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+        {t("orSocial")}
+        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
       </div>
 
       <OAuthButtons disabled={loading} />
