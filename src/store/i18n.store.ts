@@ -93,7 +93,7 @@ export const translations = {
     // Analysis Modal (Scanner)
     scannerTitle: "Nhận diện & Phân loại giống tôm AI",
     scannerSubtitle:
-      "Tải lên ảnh hoặc chụp trực tiếp để hệ thống AI Vision phân tích tức thì",
+      "Tải lên ảnh hoặc chụp trực tiếp để hệ thống phân tích tức thì",
     uploadTab: "Tải ảnh lên",
     cameraTab: "Chụp từ Camera",
     quickSamples: "Hoặc chọn ảnh mẫu thử nghiệm nhanh:",
@@ -406,7 +406,7 @@ export const translations = {
     // Analysis Modal (Scanner)
     scannerTitle: "AI Shrimp Species Identification",
     scannerSubtitle:
-      "Upload a photo or capture live to analyze with AI Vision instantly",
+      "Upload a photo or capture live for instant analysis",
     uploadTab: "Upload Photo",
     cameraTab: "Live Camera",
     quickSamples: "Or choose a quick test sample:",

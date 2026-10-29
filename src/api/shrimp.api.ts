@@ -1,5 +1,37 @@
 import { api } from "../lib/api";
 
+export interface SizeMetrics {
+  pixelLength?: number;
+  estimatedLengthCm: string;
+  estimatedWeightGram: string;
+  sizeCategory: string;
+  countPerKgEstimate?: string;
+}
+
+export interface ColorAnalysis {
+  dominantColor: string;
+  shellTransparency: string;
+  glossiness?: string;
+  description: string;
+}
+
+export interface UniformityMetrics {
+  shrimpCount: number;
+  uniformityRate: string;
+  rating: string;
+  note?: string;
+}
+
+export interface AbnormalityMetrics {
+  abnormalDetected: boolean;
+  healthSummary: string;
+  alerts: string[];
+  details: string[];
+  whiteSpotsDetected?: boolean;
+  blackGillsDetected?: boolean;
+  muscleOpacityDetected?: boolean;
+}
+
 export interface ShrimpAnalysisResponse {
   success: boolean;
   species: string;
@@ -14,6 +46,11 @@ export interface ShrimpAnalysisResponse {
   processingTime?: string;
   imageDimensions?: string;
   analyzedAt: string;
+
+  sizeMetrics?: SizeMetrics;
+  colorAnalysis?: ColorAnalysis;
+  uniformity?: UniformityMetrics;
+  abnormalities?: AbnormalityMetrics;
 }
 
 export interface SupportedSpecies {

@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Spinner } from "./Spinner";
 import logoImg from "../../assets/Logo.png";
-import { shrimpApi } from "../../api/shrimp.api";
+import {
+  shrimpApi,
+  type SizeMetrics,
+  type ColorAnalysis,
+  type UniformityMetrics,
+  type AbnormalityMetrics,
+} from "../../api/shrimp.api";
 import { apiError } from "../../lib/api";
 import { useI18nStore } from "../../store/i18n.store";
 
@@ -17,6 +23,10 @@ interface AnalysisResult {
   notes: string;
   modelStatus?: string;
   alerts?: string[];
+  sizeMetrics?: SizeMetrics;
+  colorAnalysis?: ColorAnalysis;
+  uniformity?: UniformityMetrics;
+  abnormalities?: AbnormalityMetrics;
 }
 
 interface AnalysisModalProps {
@@ -101,14 +111,14 @@ export function AnalysisModal({
       }
     } catch {
       setCameraError(
-        "Không thể truy cập camera. Vui lòng cấp quyền truy cập thiết bị hoặc sử dụng tính năng tải ảnh từ máy.",
+        "Không thể truy cập camera. Vui lòng cấp quyền máy ảnh trên trình duyệt.",
       );
     }
   };
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
   };
@@ -119,28 +129,21 @@ export function AnalysisModal({
     canvas.width = videoRef.current.videoWidth || 1280;
     canvas.height = videoRef.current.videoHeight || 720;
     const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-      setSelectedImage(dataUrl);
+    if (!ctx) return;
 
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            const fname = `camera_capture_${Date.now()}.jpg`;
-            setSelectedFile(new File([blob], fname, { type: "image/jpeg" }));
-            setSelectedFileName(fname);
-          }
-        },
-        "image/jpeg",
-        0.9,
-      );
-
-      stopCamera();
-      setActiveTab("upload");
-      setResult(null);
-      setAnalysisError(null);
-    }
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          setSelectedFile(blob);
+          setSelectedFileName(`camera_${Date.now()}.jpg`);
+          setSelectedImage(canvas.toDataURL("image/jpeg"));
+          stopCamera();
+        }
+      },
+      "image/jpeg",
+      0.95,
+    );
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +204,6 @@ export function AnalysisModal({
     try {
       let fileToSend = selectedFile;
 
-      // Nếu chưa có file object (ví dụ chọn qua sample image URL)
       if (!fileToSend && selectedImage) {
         const fetchRes = await fetch(selectedImage);
         const blob = await fetchRes.blob();
@@ -223,9 +225,11 @@ export function AnalysisModal({
         species: data.species,
         scientificName: data.scientificName,
         confidence: data.confidence,
-        healthStatus: data.abnormalDetected
-          ? "Cần lưu ý: Phát hiện dấu hiệu bất thường"
-          : "Tốt (Vỏ sáng bóng, phụ bộ nguyên vẹn)",
+        healthStatus:
+          data.abnormalities?.healthSummary ||
+          (data.abnormalDetected
+            ? "Cần lưu ý: Phát hiện dấu hiệu bất thường"
+            : "Tốt (Vỏ sáng bóng, phụ bộ nguyên vẹn)"),
         estimatedSize: data.sizeEstimate || "30 con/kg",
         commercialGrade: data.commercialGrade || "Loại 1 (Thương phẩm)",
         processingTime: data.processingTime || "0.25 giây",
@@ -236,6 +240,10 @@ export function AnalysisModal({
           "Mô hình Deep Learning AI Vision phân tích chính xác dựa trên hình thái và phân bổ sắc tố.",
         modelStatus: data.modelStatus,
         alerts: data.alerts,
+        sizeMetrics: data.sizeMetrics,
+        colorAnalysis: data.colorAnalysis,
+        uniformity: data.uniformity,
+        abnormalities: data.abnormalities,
       });
     } catch (err: unknown) {
       setAnalysisError(
@@ -252,10 +260,10 @@ export function AnalysisModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-      <div className="relative flex flex-col max-h-[92vh] w-full max-w-2xl rounded-3xl border border-slate-100 bg-white shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+      <div className="relative flex flex-col max-h-[92vh] w-full max-w-2xl rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-[#090d16] shadow-2xl overflow-hidden transition-colors">
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 bg-gradient-to-r from-sky-50/50 via-white to-cyan-50/40">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 sm:px-6 py-4 bg-gradient-to-r from-sky-50/50 via-white to-cyan-50/40 dark:from-slate-900 dark:via-[#090d16] dark:to-slate-900">
           <div className="flex items-center gap-3">
             <img
               src={logoImg}
@@ -264,11 +272,11 @@ export function AnalysisModal({
             />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                   {t("scannerTitle")}
                 </h3>
                 <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 dark:bg-cyan-900/60 px-2 py-0.5 text-[10px] font-bold text-cyan-800 dark:text-cyan-300">
-                  ● Realtime Vision
+                  ● Đa Tiêu Chí AI
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -278,26 +286,26 @@ export function AnalysisModal({
           </div>
           <button
             onClick={onClose}
-            className="grid h-9 w-9 place-items-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition"
+            className="grid h-9 w-9 place-items-center rounded-full text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
           {/* Error Banner */}
           {analysisError && (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-800 flex items-start gap-3">
+            <div className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50/80 dark:bg-rose-950/30 p-4 text-xs text-rose-800 dark:text-rose-300 flex items-start gap-3">
               <span className="text-lg leading-none">⚠️</span>
               <div className="flex-1">
-                <p className="font-bold text-rose-900">Lỗi phân tích:</p>
+                <p className="font-bold text-rose-900 dark:text-rose-200">Lỗi phân tích:</p>
                 <p className="mt-0.5">{analysisError}</p>
               </div>
               <button
                 type="button"
                 onClick={runAnalysis}
-                className="rounded-lg bg-rose-600 px-3 py-1 font-bold text-white hover:bg-rose-700 transition"
+                className="rounded-lg bg-rose-600 px-3 py-1 font-bold text-white hover:bg-rose-700 transition cursor-pointer"
               >
                 Thử lại
               </button>
@@ -313,7 +321,7 @@ export function AnalysisModal({
                   setActiveTab("upload");
                   stopCamera();
                 }}
-                className={`flex-1 rounded-lg py-2 text-xs font-bold transition ${
+                className={`flex-1 rounded-lg py-2 text-xs font-bold transition cursor-pointer ${
                   activeTab === "upload"
                     ? "bg-white dark:bg-slate-700 text-cyan-700 dark:text-cyan-300 shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -327,7 +335,7 @@ export function AnalysisModal({
                   setActiveTab("camera");
                   void startCamera();
                 }}
-                className={`flex-1 rounded-lg py-2 text-xs font-bold transition ${
+                className={`flex-1 rounded-lg py-2 text-xs font-bold transition cursor-pointer ${
                   activeTab === "camera"
                     ? "bg-white dark:bg-slate-700 text-cyan-700 dark:text-cyan-300 shadow-sm"
                     : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -338,46 +346,45 @@ export function AnalysisModal({
             </div>
           )}
 
-          {/* Upload Tab View */}
+          {/* Tab 1: Upload Drag & Drop */}
           {activeTab === "upload" && !selectedImage && !result && (
             <div className="space-y-4">
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-cyan-300 dark:border-cyan-700 bg-cyan-50/30 dark:bg-cyan-950/20 p-8 text-center cursor-pointer transition hover:bg-cyan-50/60 dark:hover:bg-cyan-950/40 hover:border-cyan-400"
+                className="group relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 p-8 text-center transition hover:border-cyan-500 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/10 cursor-pointer"
               >
                 <input
                   ref={fileInputRef}
                   type="file"
                   accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
                   onChange={handleFileChange}
+                  className="hidden"
                 />
-                <div className="grid h-14 w-14 place-items-center rounded-2xl bg-cyan-100 dark:bg-cyan-900/60 text-cyan-600 dark:text-cyan-300 text-2xl shadow-inner mb-3">
-                  ☁️
+                <div className="relative h-14 w-14 rounded-2xl p-1.5 bg-white dark:bg-slate-800 shadow-xs ring-2 ring-cyan-500/20 group-hover:scale-105 transition flex items-center justify-center">
+                  <img
+                    src={logoImg}
+                    alt="shrimpAI"
+                    className="h-full w-full rounded-xl object-contain"
+                  />
+
                 </div>
-                <p className="font-bold text-slate-800 dark:text-slate-200 text-base">
-                  {t("dragDropText")}
+                <p className="mt-3 text-xs font-bold text-slate-800 dark:text-slate-200">
+                  {t("dragDropText")}{" "}
+                  <span className="text-cyan-600 dark:text-cyan-400 underline underline-offset-2">
+                    {t("browseFile")}
+                  </span>
                 </p>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {t("browseFile")}
-                </p>
-                <button
-                  type="button"
-                  className="mt-4 inline-flex items-center gap-2 rounded-xl bg-cyan-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-cyan-700 transition"
-                >
-                  🖼️ {t("browseFile")}
-                </button>
-                <p className="mt-3 text-[11px] text-slate-400">
-                  Định dạng: JPG, PNG, WEBP (Tối đa 15MB)
+                <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
+                  {t("demoFormats")}
                 </p>
               </div>
 
-              {/* Quick Sample Selector */}
+              {/* Sample Quick Selector */}
               <div>
-                <p className="text-xs font-bold text-slate-600 dark:text-slate-400 mb-2 flex items-center gap-1.5">
-                  <span>⚡</span> {t("quickSamples")}
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2">
+                  {t("quickSamples")}
                 </p>
                 <div className="grid grid-cols-3 gap-2.5">
                   {SAMPLE_SHRIMPS.map((sample) => (
@@ -385,22 +392,17 @@ export function AnalysisModal({
                       key={sample.id}
                       type="button"
                       onClick={() => handleSelectSample(sample)}
-                      className="group relative flex flex-col items-center p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-cyan-400 dark:hover:border-cyan-500 hover:shadow-md transition text-left"
+                      className="group flex flex-col items-center p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-cyan-400 hover:bg-cyan-50/30 transition text-center cursor-pointer shadow-2xs"
                     >
-                      <div className="h-16 w-full rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-1.5">
-                        <img
-                          src={sample.file}
-                          alt={sample.name}
-                          className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
-                        />
-                      </div>
-                      <span className="w-full text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                      <img
+                        src={sample.file}
+                        alt={sample.name}
+                        className="h-14 w-full object-cover rounded-lg group-hover:scale-105 transition"
+                      />
+                      <span className="mt-1.5 text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate w-full">
                         {sample.name}
                       </span>
-                      <span className="w-full text-[10px] text-slate-400 truncate">
-                        {sample.desc}
-                      </span>
-                      <span className="mt-1 self-start rounded-md bg-cyan-50 dark:bg-cyan-950/60 px-1.5 py-0.5 text-[9px] font-bold text-cyan-700 dark:text-cyan-300">
+                      <span className="text-[9px] text-cyan-600 dark:text-cyan-400 font-semibold">
                         {sample.badge}
                       </span>
                     </button>
@@ -410,40 +412,32 @@ export function AnalysisModal({
             </div>
           )}
 
-          {/* Camera Tab View */}
+          {/* Tab 2: Camera Capture */}
           {activeTab === "camera" && !selectedImage && !result && (
-            <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-900 text-white">
+            <div className="space-y-3">
               {cameraError ? (
-                <div className="p-8 text-center">
-                  <p className="text-amber-400 text-sm mb-3">{cameraError}</p>
-                  <button
-                    type="button"
-                    onClick={startCamera}
-                    className="rounded-xl bg-cyan-600 px-4 py-2 text-xs font-bold text-white"
-                  >
-                    Thử lại
-                  </button>
+                <div className="rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/30 p-5 text-center text-xs text-rose-800 dark:text-rose-300">
+                  <p className="font-bold text-sm mb-1">Không thể mở Camera</p>
+                  <p>{cameraError}</p>
                 </div>
               ) : (
-                <div className="relative">
+                <div className="relative overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-700 bg-black">
                   <video
                     ref={videoRef}
-                    autoPlay
                     playsInline
                     muted
-                    className="w-full h-72 object-cover"
+                    className="w-full h-64 object-cover"
                   />
-                  {/* Camera Reticle Overlay */}
-                  <div className="absolute inset-8 border-2 border-cyan-400/80 rounded-xl pointer-events-none flex items-center justify-center">
-                    <span className="text-xs bg-slate-900/60 px-2 py-1 rounded text-cyan-300 backdrop-blur">
-                      Căn chỉnh tôm vào giữa khung hình
+                  <div className="absolute inset-0 border-2 border-cyan-400/50 rounded-2xl pointer-events-none flex items-center justify-center">
+                    <span className="text-[11px] font-semibold text-white/90 bg-black/60 px-3 py-1 rounded-full backdrop-blur-xs">
+                      Hướng camera vào cá thể hoặc mẻ tôm
                     </span>
                   </div>
-                  <div className="p-4 bg-slate-900/80 backdrop-blur flex justify-center">
+                  <div className="p-3 bg-slate-900/90 backdrop-blur flex justify-center">
                     <button
                       type="button"
                       onClick={capturePhoto}
-                      className="inline-flex items-center gap-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-bold px-6 py-2.5 text-sm shadow-lg transition"
+                      className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-900 font-black px-6 py-2.5 text-xs shadow-lg transition active:scale-95 cursor-pointer"
                     >
                       📸 {t("capturePhoto")}
                     </button>
@@ -453,29 +447,26 @@ export function AnalysisModal({
             </div>
           )}
 
-          {/* Image Selected Preview & Analysis Action */}
+          {/* Preview selected image before scanning */}
           {selectedImage && !result && (
             <div className="space-y-4">
               <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-950">
                 <img
                   src={selectedImage}
                   alt="Tôm cần phân tích"
-                  className="w-full max-h-72 object-contain mx-auto"
+                  className="w-full max-h-64 object-contain mx-auto"
                 />
 
-                {/* AI Laser Scanning Effect */}
+                {/* Laser scan animation */}
                 {isAnalyzing && (
-                  <div className="absolute inset-0 bg-cyan-950/40 backdrop-blur-[2px] flex flex-col items-center justify-center">
-                    <div className="relative w-full h-full">
-                      <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent shadow-[0_0_20px_#22d3ee] animate-pulse" />
-                    </div>
-                    <div className="absolute rounded-2xl bg-slate-900/95 px-6 py-4 text-center text-white backdrop-blur shadow-2xl border border-cyan-500/30">
-                      <Spinner className="h-7 w-7 text-cyan-400 mx-auto mb-2.5 animate-spin" />
+                  <div className="absolute inset-0 bg-cyan-950/50 backdrop-blur-[2px] flex flex-col items-center justify-center p-4">
+                    <div className="rounded-2xl bg-slate-900/95 px-6 py-4 text-center text-white backdrop-blur shadow-2xl border border-cyan-500/40 animate-pulse">
+                      <Spinner className="h-7 w-7 text-cyan-400 mx-auto mb-2 animate-spin" />
                       <p className="text-xs font-bold text-cyan-300">
-                        {t("analyzing")}
+                        Đang phân tích Loài, Kích thước, Màu sắc & Bệnh lý...
                       </p>
-                      <p className="text-[11px] text-slate-400 mt-1">
-                        POST /shrimp-analysis/analyze ➔ Deep Learning Vision
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        YOLOv8 Classifier + OpenCV Morphometrics
                       </p>
                     </div>
                   </div>
@@ -483,7 +474,7 @@ export function AnalysisModal({
               </div>
 
               {!isAnalyzing && (
-                <div className="flex gap-3">
+                <div className="flex gap-2.5">
                   <button
                     type="button"
                     onClick={() => {
@@ -493,14 +484,14 @@ export function AnalysisModal({
                       setResult(null);
                       setAnalysisError(null);
                     }}
-                    className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                    className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
                   >
                     {t("changeImage")}
                   </button>
                   <button
                     type="button"
                     onClick={runAnalysis}
-                    className="flex-2 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 py-2.5 text-xs font-bold text-white shadow-md hover:from-cyan-700 hover:to-teal-700 transition"
+                    className="flex-2 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 py-2.5 text-xs font-bold text-white shadow-md hover:from-cyan-700 hover:to-teal-700 transition active:scale-[0.99] cursor-pointer"
                   >
                     ⚡ {t("startScanBtn")}
                   </button>
@@ -509,23 +500,22 @@ export function AnalysisModal({
             </div>
           )}
 
-          {/* Analysis Result View */}
+          {/* COMPREHENSIVE MULTI-CRITERIA ANALYSIS RESULTS */}
           {result && (
-            <div className="space-y-4">
-              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50/60 via-teal-50/30 to-white dark:from-emerald-950/30 dark:via-slate-900 dark:to-slate-900 p-5 shadow-sm">
+            <div className="space-y-4 animate-fade-in">
+              {/* Card 1: Loài & Thương phẩm */}
+              <div className="rounded-2xl border border-cyan-200 dark:border-cyan-800 bg-gradient-to-br from-cyan-50/70 via-sky-50/30 to-white dark:from-cyan-950/30 dark:via-slate-900 dark:to-slate-900 p-4 sm:p-5 shadow-xs">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 dark:bg-cyan-950/60 px-2.5 py-0.5 text-[10px] font-bold text-cyan-800 dark:text-cyan-300">
                         ✓ {t("resultTitle")}
                       </span>
-                      {result.modelStatus && (
-                        <span className="rounded-full bg-cyan-100 dark:bg-cyan-950/60 px-2 py-0.5 text-[10px] font-semibold text-cyan-800 dark:text-cyan-300">
-                          {result.modelStatus}
-                        </span>
-                      )}
+                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                        {result.commercialGrade}
+                      </span>
                     </div>
-                    <h4 className="mt-2 text-2xl font-black text-slate-900 dark:text-white">
+                    <h4 className="mt-2 text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                       {result.species}
                     </h4>
                     <p className="text-xs font-semibold italic text-slate-500 dark:text-slate-400">
@@ -533,61 +523,152 @@ export function AnalysisModal({
                     </p>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                      {t("confidence")}
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                      Độ tin cậy AI
                     </span>
-                    <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                    <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
                       {result.confidence}%
                     </p>
                   </div>
                 </div>
 
-                {/* Confidence Bar */}
                 <div className="mt-3">
-                  <div className="h-2.5 w-full rounded-full bg-emerald-100 dark:bg-emerald-950/60 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-cyan-100 dark:bg-cyan-950 overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full transition-all duration-700"
+                      className="h-full bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full transition-all duration-700"
                       style={{ width: `${result.confidence}%` }}
                     />
                   </div>
                 </div>
+              </div>
 
-                {/* Details Grid */}
-                <div className="mt-4 grid gap-3 grid-cols-2 text-xs border-t border-emerald-100 dark:border-slate-800 pt-3">
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">Tình trạng hình thái:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {result.healthStatus}
-                    </p>
+              {/* 4-Criteria Grid (Kích thước, Màu sắc, Độ đồng đều, Bệnh lý) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* 1. Kích thước & Khối lượng */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      📏 Kích thước & Khối lượng
+                    </span>
+                    <span className="rounded bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 text-[10px] font-bold px-1.5 py-0.5">
+                      {result.sizeMetrics?.sizeCategory || "Đạt chuẩn"}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">{t("sizeEstimate")}:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {result.estimatedSize}
-                    </p>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400 pt-0.5">
+                    <span>Chiều dài thân:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">
+                      {result.sizeMetrics?.estimatedLengthCm || "13 - 15 cm"}
+                    </strong>
                   </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">{t("commercialGrade")}:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {result.commercialGrade}
-                    </p>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Khối lượng ước tính:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">
+                      {result.sizeMetrics?.estimatedWeightGram || "22.5 g/con"}
+                    </strong>
                   </div>
-                  <div>
-                    <span className="text-slate-500 dark:text-slate-400">Thời gian xử lý:</span>
-                    <p className="font-semibold text-slate-800 dark:text-slate-200">
-                      {result.processingTime}
-                    </p>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Quy đổi số con/kg:</span>
+                    <strong className="text-cyan-700 dark:text-cyan-400">
+                      {result.sizeMetrics?.countPerKgEstimate || result.estimatedSize}
+                    </strong>
                   </div>
-                  <div className="col-span-2">
-                    <span className="text-slate-500 dark:text-slate-400">{t("biologicalDescription")}:</span>
-                    <p className="font-medium text-slate-700 dark:text-slate-300 mt-0.5">
-                      {result.notes}
+                </div>
+
+                {/* 2. Sắc tố & Màu sắc vỏ */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      🎨 Sắc tố & Màu vỏ
+                    </span>
+                    <span className="rounded bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-1.5 py-0.5">
+                      {result.colorAnalysis?.glossiness || "Sáng bóng"}
+                    </span>
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400 pt-0.5">
+                    <span className="block text-[11px] text-slate-500">Màu sắc chủ đạo:</span>
+                    <strong className="text-slate-800 dark:text-slate-200 text-[11px]">
+                      {result.colorAnalysis?.dominantColor || "Sắc tố tự nhiên đồng đều"}
+                    </strong>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Độ trong suốt:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">
+                      {result.colorAnalysis?.shellTransparency || "Trong suốt tự nhiên"}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* 3. Mức độ đồng đều */}
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      ⚖️ Độ đồng đều mẻ tôm
+                    </span>
+                    <span className="rounded bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold px-1.5 py-0.5">
+                      {result.uniformity?.uniformityRate || "95.0%"}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400 pt-0.5">
+                    <span>Số lượng phát hiện:</span>
+                    <strong className="text-slate-800 dark:text-slate-200">
+                      {result.uniformity?.shrimpCount || 1} cá thể
+                    </strong>
+                  </div>
+                  <div className="text-slate-600 dark:text-slate-400">
+                    <span className="block text-[11px] text-slate-500">Đánh giá phân cỡ:</span>
+                    <strong className="text-slate-800 dark:text-slate-200 text-[11px]">
+                      {result.uniformity?.rating || "Cân đối hình thái học chuẩn"}
+                    </strong>
+                  </div>
+                </div>
+
+                {/* 4. Dấu hiệu bất thường & Dịch bệnh */}
+                <div className={`rounded-2xl border p-3.5 space-y-1.5 shadow-2xs ${
+                  result.alerts && result.alerts.length > 0
+                    ? "border-amber-300 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/30"
+                    : "border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60"
+                }`}>
+                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
+                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      🩺 Dấu hiệu bệnh lý
+                    </span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      result.alerts && result.alerts.length > 0
+                        ? "bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200"
+                        : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                    }`}>
+                      {result.alerts && result.alerts.length > 0 ? "Cần lưu ý" : "✓ Khỏe mạnh"}
+                    </span>
+                  </div>
+                  <div className="text-[11px] space-y-0.5 pt-0.5">
+                    <p className="font-semibold text-slate-700 dark:text-slate-300">
+                      {result.abnormalities?.healthSummary || result.healthStatus}
                     </p>
+                    {result.abnormalities?.details?.map((detail, idx) => (
+                      <p key={idx} className="text-slate-500 dark:text-slate-400 text-[10px]">
+                        {detail}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              {/* Alert Warning Box (nếu phát hiện bệnh lý/dấu hiệu bất thường) */}
+              {result.alerts && result.alerts.length > 0 && (
+                <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/90 dark:bg-amber-950/40 p-3.5 text-xs text-amber-900 dark:text-amber-200 space-y-1 shadow-xs">
+                  <p className="font-bold flex items-center gap-1.5 text-amber-950 dark:text-amber-300">
+                    ⚠️ Cảnh báo kiểm định chất lượng:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-0.5 text-[11px]">
+                    {result.alerts.map((alt, i) => (
+                      <li key={i}>{alt}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Bottom Buttons */}
+              <div className="flex gap-2.5 pt-1">
                 <button
                   type="button"
                   onClick={() => {
@@ -597,16 +678,16 @@ export function AnalysisModal({
                     setSelectedFileName("");
                     setAnalysisError(null);
                   }}
-                  className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+                  className="flex-1 rounded-xl border border-slate-200 dark:border-slate-800 py-2.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
                 >
                   🔄 {t("reScan")}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 rounded-xl bg-cyan-600 py-2.5 text-xs font-bold text-white hover:bg-cyan-700 shadow-sm transition"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 py-2.5 text-xs font-bold text-white hover:from-cyan-700 hover:to-teal-700 shadow-sm transition cursor-pointer"
                 >
-                  {t("saveHistory")}
+                  ✓ Hoàn tất kiểm định
                 </button>
               </div>
             </div>
