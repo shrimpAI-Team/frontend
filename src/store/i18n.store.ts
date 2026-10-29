@@ -7,6 +7,7 @@ export const translations = {
     // Navigation
     home: "Trang chủ",
     analysis: "Phân tích tôm",
+    techConsulting: "Tư vấn kỹ thuật",
     history: "Lịch sử",
     about: "Giới thiệu",
     admin: "Quản trị",
@@ -319,6 +320,7 @@ export const translations = {
     // Navigation
     home: "Home",
     analysis: "Shrimp Analysis",
+    techConsulting: "Technical Advisory",
     history: "History",
     about: "About Us",
     admin: "Admin",

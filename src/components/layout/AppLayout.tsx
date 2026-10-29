@@ -33,7 +33,7 @@ export function AppLayout() {
 
   const navLinks: NavLinkItem[] = [
     { to: "/dashboard", label: t("home") },
-    { to: "/chat", label: t("analysis") },
+    { to: "/chat", label: t("techConsulting") },
     { to: "/dashboard#history", label: t("history") },
     { to: "/about", label: t("about") },
     ...(user?.role === "ADMIN" ? [{ to: "/admin", label: t("admin") }] : []),

@@ -359,8 +359,12 @@ export default function ChatPage() {
               ) : messages.length === 0 ? (
                 /* Welcome Hero & Prompt Suggestions */
                 <div className="flex flex-col items-center justify-center max-w-xl mx-auto text-center py-8">
-                  <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-tr from-cyan-100 to-sky-100 dark:from-cyan-950 dark:to-sky-950 text-cyan-600 dark:text-cyan-400 text-3xl shadow-inner mb-4">
-                    🦐
+                  <div className="relative mb-4 flex items-center justify-center">
+                    <img
+                      src={logoImg}
+                      alt="shrimpAI Assistant"
+                      className="h-16 w-16 rounded-full object-contain ring-4 ring-cyan-500/20 dark:ring-cyan-500/30 shadow-md p-1 bg-white dark:bg-slate-800"
+                    />
                   </div>
                   <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                     {t("botWelcome").split(".")[0] || "Trợ lý AI Thủy sản shrimpAI"}
@@ -407,9 +411,11 @@ export default function ChatPage() {
                     }`}
                   >
                     {msg.role === "assistant" && (
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-tr from-cyan-100 to-teal-100 dark:from-cyan-950 dark:to-teal-950 text-cyan-700 dark:text-cyan-300 text-lg shadow-xs ring-1 ring-cyan-200/50 dark:ring-cyan-800/50">
-                        🦐
-                      </div>
+                      <img
+                        src={logoImg}
+                        alt="shrimpAI"
+                        className="h-8 w-8 shrink-0 rounded-full object-contain p-0.5 bg-white dark:bg-slate-800 ring-2 ring-cyan-500/20 shadow-xs"
+                      />
                     )}
 
                     <div
@@ -541,9 +547,11 @@ export default function ChatPage() {
               {/* AI Typing Indicator */}
               {isSending && (
                 <div className="flex gap-3 justify-start items-center">
-                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 text-lg ring-1 ring-cyan-200/50 dark:ring-cyan-800/50">
-                    🦐
-                  </div>
+                  <img
+                    src={logoImg}
+                    alt="shrimpAI"
+                    className="h-8 w-8 shrink-0 rounded-full object-contain p-0.5 bg-white dark:bg-slate-800 ring-2 ring-cyan-500/20 shadow-xs"
+                  />
                   <div className="rounded-2xl border border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-950/40 px-4 py-3 text-xs text-cyan-800 dark:text-cyan-300 flex items-center gap-2 shadow-xs">
                     <Spinner className="h-4 w-4 text-cyan-600" />
                     <span className="font-semibold">shrimpAI đang xử lý câu trả lời...</span>
