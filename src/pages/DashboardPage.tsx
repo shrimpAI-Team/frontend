@@ -67,14 +67,7 @@ export default function DashboardPage() {
 
   const currentSlide = heroShrimpSlides[currentSlideIndex];
 
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  return (
+return (
     <div className="space-y-16 sm:space-y-24">
       {/* ════════════════════════ HERO SECTION ════════════════════════ */}
       <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-16 bg-gradient-to-b from-cyan-50/70 via-sky-50/40 to-transparent dark:from-cyan-950/20 dark:via-sky-950/10 dark:to-transparent">
@@ -114,11 +107,7 @@ export default function DashboardPage() {
                   <span>{t("scanNowBtn")}</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => scrollToSection("steps")}
-                  className="btn-outline-modern dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-200"
-                >
+                <Link to="/history" className="btn-outline-modern dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-200">
                   <svg
                     viewBox="0 0 24 24"
                     className="h-4 w-4 fill-none stroke-current stroke-2"
@@ -126,7 +115,7 @@ export default function DashboardPage() {
                     <polygon points="5 3 19 12 5 21 5 3" />
                   </svg>
                   <span>{t("viewHistoryBtn")}</span>
-                </button>
+                </Link>
               </div>
             </div>
 
@@ -803,9 +792,7 @@ export default function DashboardPage() {
             >
               {t("analysis")}
             </button>
-            <a href="#history" className="hover:text-cyan-600 dark:hover:text-cyan-400">
-              {t("history")}
-            </a>
+            <Link to="/history" className="hover:text-cyan-600 dark:hover:text-cyan-400">{t("history")}</Link>
             <Link to="/about" className="hover:text-cyan-600 dark:hover:text-cyan-400">
               {t("about")}
             </Link>

@@ -10,6 +10,7 @@ import VerifyOtpPage from "./pages/VerifyOtpPage";
 import TwoFactorPage from "./pages/TwoFactorPage";
 import OAuthCallbackPage from "./pages/OAuthCallbackPage";
 import DashboardPage from "./pages/DashboardPage";
+import HistoryPage from "./pages/HistoryPage";
 import ProfilePage from "./pages/ProfilePage";
 import SecurityPage from "./pages/SecurityPage";
 import AdminPage from "./pages/AdminPage";
@@ -86,6 +87,7 @@ export default function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/history" element={<HistoryPage />} />
             <Route path="/chat" element={<ChatPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/profile" element={<ProfilePage />} />

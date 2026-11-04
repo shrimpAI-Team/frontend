@@ -220,6 +220,7 @@ export function AnalysisModal({
       const uploadName =
         (fileToSend as File).name || selectedFileName || "shrimp_image.jpg";
       const data = await shrimpApi.analyze(fileToSend, uploadName);
+      window.dispatchEvent(new CustomEvent("shrimp:analyzed", { detail: data }));
 
       setResult({
         species: data.species,
