@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import {
   shrimpApi,
@@ -15,6 +15,8 @@ interface OutletContextType {
   openAnalysisModal: () => void;
 }
 
+const historyPageSizes = [10, 20, 30];
+
 export default function HistoryPage() {
   const { openAnalysisModal } = useOutletContext<OutletContextType>();
   const { t, lang } = useI18nStore();
@@ -28,8 +30,10 @@ export default function HistoryPage() {
 
   // Filters & State
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(historyPageSizes[0]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const historyRequest = useRef(0);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [speciesFilter, setSpeciesFilter] = useState("all");
@@ -54,27 +58,38 @@ export default function HistoryPage() {
 
   // Load history data
   const loadHistory = useCallback(async () => {
+    const request = ++historyRequest.current;
     setLoading(true);
     setError(null);
     try {
       const res = await shrimpApi.getHistory({
         page,
-        limit: 12,
+        limit: pageSize,
         species: speciesFilter,
         status: statusFilter,
         search: debouncedSearch,
       });
 
-      setItems(res.items);
+      if (request !== historyRequest.current) return;
+
       setTotalPages(res.totalPages);
       setTotalCount(res.total);
       setStats(res.stats);
+
+      if (page > res.totalPages) {
+        setPage(res.totalPages);
+        return;
+      }
+
+      setItems(res.items);
     } catch (err: unknown) {
-      setError(apiError(err, "Không thể tải danh sách lịch sử giám định."));
+      if (request === historyRequest.current) {
+        setError(apiError(err, "Không thể tải danh sách lịch sử giám định."));
+      }
     } finally {
-      setLoading(false);
+      if (request === historyRequest.current) setLoading(false);
     }
-  }, [page, speciesFilter, statusFilter, debouncedSearch]);
+  }, [page, pageSize, speciesFilter, statusFilter, debouncedSearch]);
 
   useEffect(() => {
     loadHistory();
@@ -141,9 +156,8 @@ export default function HistoryPage() {
       "Giống loài": item.species,
       "Tên khoa học": item.scientificName,
       "Độ tin cậy (%)": item.confidence,
-      "Kích thước ước tính": item.sizeEstimate || "",
       "Phân hạng": item.commercialGrade || "",
-      "Tình trạng": item.abnormalDetected ? "Cần lưu ý" : "Khỏe mạnh",
+      "Tình trạng": item.abnormalDetected ? "Cần lưu ý" : (item.healthStatus || "Chưa đánh giá"),
       "Thời gian phân tích": item.processingTime || "",
       "Ngày giám định": new Date(item.createdAt).toLocaleString("vi-VN"),
     }));
@@ -163,7 +177,7 @@ export default function HistoryPage() {
   const handleConsultAi = (item: ShrimpHistoryItem) => {
     navigate("/chat", {
       state: {
-        initialQuery: `Tôi vừa giám định mẫu tôm giống ${item.species} (${item.scientificName}) với độ tin cậy ${item.confidence}%, kích thước ${item.sizeEstimate || "tiêu chuẩn"}, tình trạng: ${item.abnormalDetected ? "Cần lưu ý bất thường" : "Khỏe mạnh"}. Xin chuyên gia tư vấn chế độ chăm sóc và quản lý nước phù hợp cho đàn tôm này.`,
+        initialQuery: `Tôi vừa giám định mẫu tôm giống ${item.species} (${item.scientificName}) với độ tin cậy ${item.confidence}%, tình trạng: ${item.abnormalDetected ? "Cần lưu ý bất thường" : (item.healthStatus || "Chưa đánh giá")}. Xin chuyên gia tư vấn chế độ chăm sóc và quản lý nước phù hợp cho đàn tôm này.`,
       },
     });
   };
@@ -183,6 +197,11 @@ export default function HistoryPage() {
       return isoString;
     }
   };
+
+  const firstMiddlePage = Math.max(2, Math.min(page - 1, totalPages - 3));
+  const pageNumbers = totalPages <= 7
+    ? Array.from({ length: totalPages }, (_, index) => index + 1)
+    : [1, firstMiddlePage, firstMiddlePage + 1, firstMiddlePage + 2, totalPages];
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8 animate-fade-in">
@@ -280,7 +299,7 @@ export default function HistoryPage() {
               <span>{t("healthySamples")}</span>
               <span className="text-lg">🛡️</span>
             </div>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+            <p className="text-2xl font-black text-emerald-600 dark:text-slate-400">
               {stats.healthyCount}
             </p>
             <p className="text-[11px] text-slate-400 mt-1">
@@ -341,9 +360,15 @@ export default function HistoryPage() {
             className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-cyan-500"
           >
             <option value="all">{t("filterAllSpecies")}</option>
+            <option value="Chưa xác định">Chưa xác định</option>
             <option value="thẻ chân trắng">{t("the_chan_trang")}</option>
             <option value="sú">{t("tom_su")}</option>
             <option value="càng xanh">{t("tom_cang_xanh")}</option>
+            <option value="Tôm đất">Tôm đất</option>
+            <option value="Tôm hùm">Tôm hùm</option>
+            <option value="Tôm hùm đất">Tôm hùm đất</option>
+            <option value="Tép cảnh">Tép cảnh</option>
+            <option value="Tôm tít">Tôm tít</option>
           </select>
 
           {/* Status */}
@@ -472,17 +497,14 @@ export default function HistoryPage() {
                         ⚠️ Cần lưu ý
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-xs">
-                        ✓ Khỏe mạnh
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-500/90 backdrop-blur-md px-2.5 py-1 text-[10px] font-bold text-white shadow-xs">
+                        {item.healthStatus || "Chưa đánh giá"}
                       </span>
                     )}
                   </div>
 
                   {/* Bottom Telemetry Bar */}
-                  <div className="absolute bottom-2 inset-x-2 rounded-xl bg-slate-950/85 backdrop-blur-md px-3 py-1.5 border border-white/10 text-[11px] text-white flex items-center justify-between font-mono">
-                    <span className="text-cyan-300 truncate max-w-[140px]">
-                      {item.sizeEstimate?.split(" (")[0] || "Size tiêu chuẩn"}
-                    </span>
+                  <div className="absolute bottom-2 inset-x-2 rounded-xl bg-slate-950/85 backdrop-blur-md px-3 py-1.5 border border-white/10 text-[11px] text-white flex items-center justify-end font-mono">
                     <span className="text-[10px] text-slate-400">
                       {item.processingTime || "0.25s"}
                     </span>
@@ -500,7 +522,7 @@ export default function HistoryPage() {
                     {item.scientificName}
                   </p>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-1">
-                    {item.healthStatus || item.description || "Mẫu đạt tiêu chuẩn thương phẩm."}
+                    {item.healthStatus || item.description || "Chưa đánh giá"}
                   </p>
                 </div>
               </div>
@@ -539,7 +561,6 @@ export default function HistoryPage() {
                 <th className="px-5 py-3.5">{t("sampleImage")}</th>
                 <th className="px-5 py-3.5">{t("speciesCol")}</th>
                 <th className="px-5 py-3.5">{t("confidenceCol")}</th>
-                <th className="px-5 py-3.5">Kích thước</th>
                 <th className="px-5 py-3.5">{t("statusCol")}</th>
                 <th className="px-5 py-3.5">{t("scanDate")}</th>
                 <th className="px-5 py-3.5 text-right">{t("actionsCol")}</th>
@@ -574,16 +595,13 @@ export default function HistoryPage() {
                     </span>
                   </td>
                   <td className="px-5 py-3">
-                    <span>{item.sizeEstimate?.split(" (")[0] || "--"}</span>
-                  </td>
-                  <td className="px-5 py-3">
                     {item.abnormalDetected ? (
                       <span className="rounded-full bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">
                         ⚠️ Cần lưu ý
                       </span>
                     ) : (
-                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-                        ✓ Khỏe mạnh
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-950/60 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:text-slate-400">
+                        {item.healthStatus || "Chưa đánh giá"}
                       </span>
                     )}
                   </td>
@@ -624,31 +642,57 @@ export default function HistoryPage() {
       )}
 
       {/* ════════════════════════ PAGINATION ════════════════════════ */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-200/80 dark:border-slate-800 pt-6">
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Hiển thị trang {page} / {totalPages} (Tổng số {totalCount} mẫu)
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={page <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 disabled:opacity-40 transition"
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-slate-200/80 pt-6 dark:border-slate-800">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {t("historyPageSummary")
+            .replace("{page}", String(page))
+            .replace("{pages}", String(totalPages))
+            .replace("{total}", String(totalCount))}
+        </p>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <label className="flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+            {t("historyImagesPerPage")}
+            <select
+              value={pageSize}
+              onChange={(event) => {
+                setPageSize(Number(event.target.value));
+                setPage(1);
+              }}
+              className="min-h-9 rounded-xl border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-700 focus-visible:outline-2 focus-visible:outline-cyan-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             >
-              ← Trước
-            </button>
-            <button
-              type="button"
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 disabled:opacity-40 transition"
-            >
-              Sau →
-            </button>
-          </div>
+              {historyPageSizes.map((size) => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+          </label>
+          {totalPages > 1 && (
+            <nav aria-label={t("historyPagination")}>
+              <ul className="flex flex-wrap items-center gap-1.5">
+                {pageNumbers.map((pageNumber, index) => (
+                  <li key={pageNumber} className="flex items-center gap-1.5">
+                    {index > 0 && pageNumber - pageNumbers[index - 1] > 1 && (
+                      <span aria-hidden="true" className="px-1 text-slate-500 dark:text-slate-400">…</span>
+                    )}
+                    <button
+                      type="button"
+                      aria-label={`${t("historyPageNumber")} ${pageNumber}`}
+                      aria-current={pageNumber === page ? "page" : undefined}
+                      onClick={() => setPage(pageNumber)}
+                      className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-xl border px-2.5 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 ${
+                        pageNumber === page
+                          ? "border-cyan-700 bg-cyan-700 text-white dark:border-cyan-400 dark:bg-cyan-400 dark:text-slate-950"
+                          : "border-slate-200 text-slate-700 hover:border-cyan-400 hover:bg-cyan-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-cyan-950/50"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </div>
-      )}
+      </div>
 
       {/* ════════════════════════ DETAIL MODAL ════════════════════════ */}
       {selectedItem && (
@@ -700,8 +744,8 @@ export default function HistoryPage() {
                         ⚠️ Cần lưu ý
                       </span>
                     ) : (
-                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                        ✓ Khỏe mạnh hoàn toàn
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-950/60 px-2.5 py-0.5 text-xs font-bold text-slate-700 dark:text-slate-400">
+                        {selectedItem.healthStatus || "Chưa đánh giá"}
                       </span>
                     )}
                   </div>
@@ -723,21 +767,15 @@ export default function HistoryPage() {
 
                   <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-slate-100 dark:border-slate-800">
                     <div>
-                      <p className="text-slate-400">Kích thước</p>
-                      <p className="font-bold text-slate-800 dark:text-slate-200">
-                        {selectedItem.sizeEstimate || "30 - 40 con/kg"}
-                      </p>
-                    </div>
-                    <div>
                       <p className="text-slate-400">Phân hạng</p>
                       <p className="font-bold text-slate-800 dark:text-slate-200">
-                        {selectedItem.commercialGrade || "Loại 1 (Thương phẩm)"}
+                        {selectedItem.commercialGrade || "Chưa đánh giá"}
                       </p>
                     </div>
                     <div>
                       <p className="text-slate-400">Thời gian xử lý</p>
                       <p className="font-bold text-slate-800 dark:text-slate-200">
-                        {selectedItem.processingTime || "0.25 giây"}
+                        {selectedItem.processingTime || "--"}
                       </p>
                     </div>
                     <div>
@@ -750,7 +788,7 @@ export default function HistoryPage() {
                 </div>
               </div>
 
-              {/* Pathology & Morphometrics Sections */}
+              {/* Health and color */}
               <div className="space-y-4">
                 {/* Health Summary Box */}
                 <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850 p-4 space-y-2">
@@ -758,7 +796,7 @@ export default function HistoryPage() {
                     <span>🔬</span> {t("pathologyScreening")}
                   </h4>
                   <p className="text-xs text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
-                    {selectedItem.healthStatus || "Tôm khỏe mạnh, không phát hiện vết hoại tử hoặc đốm trắng bất thường."}
+                    {selectedItem.healthStatus || "Chưa đánh giá"}
                   </p>
                   {selectedItem.abnormalities?.details && (
                     <ul className="text-[11px] text-slate-600 dark:text-slate-400 space-y-1 pt-1">

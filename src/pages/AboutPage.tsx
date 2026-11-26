@@ -114,13 +114,6 @@ export default function AboutPage() {
       badgeColor: "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
     },
     {
-      name: t("crit4Name"),
-      detail: t("crit4Detail"),
-      status: t("crit4Status"),
-      confidence: t("crit4Conf"),
-      badgeColor: "bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
-    },
-    {
       name: t("crit5Name"),
       detail: t("crit5Detail"),
       status: t("crit5Status"),

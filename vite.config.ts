@@ -9,6 +9,15 @@ export default defineConfig({
     port: 5174,
     host: true, // cho phép test trên điện thoại cùng mạng LAN
     proxy: {
+      '/ponds': {
+        target: 'http://127.0.0.1:4000',
+        changeOrigin: true,
+        bypass: (req) => {
+          if (req.headers.accept?.includes('text/html')) {
+            return '/index.html';
+          }
+        },
+      },
       '/auth': {
         target: 'http://127.0.0.1:4000',
         changeOrigin: true,

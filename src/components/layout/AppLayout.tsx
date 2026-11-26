@@ -15,6 +15,10 @@ export function AppLayout() {
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const navigate = useNavigate();
+  const isAdmin = user?.role === "ADMIN";
+  const desktopHeader = isAdmin ? "2xl:flex" : "xl:flex";
+  const compactHeader = isAdmin ? "2xl:hidden" : "xl:hidden";
+  const adminPortalUrl = import.meta.env.VITE_ADMIN_PORTAL_URL || "http://localhost:5175";
 
   useEffect(() => {
     setAvatarError(false);
@@ -35,8 +39,9 @@ export function AppLayout() {
     { to: "/dashboard", label: t("home") },
     { to: "/chat", label: t("techConsulting") },
     { to: "/history", label: t("history") },
+    { to: "/ponds", label: t("ponds") },
     { to: "/about", label: t("about") },
-    ...(user?.role === "ADMIN" ? [{ to: "/admin", label: t("admin") }] : []),
+    ...(isAdmin ? [{ to: "/admin", label: t("admin") }] : []),
   ];
 
   return (
@@ -49,7 +54,7 @@ export function AppLayout() {
         className="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/95 dark:bg-[#090d16]/95 backdrop-blur shadow-xs transition-colors"
         style={{ backgroundColor: "var(--bg-header)", borderColor: "var(--border-subtle)" }}
       >
-        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-18 max-w-[100rem] items-center justify-between gap-2 px-3 sm:gap-4 sm:px-6 lg:px-8">
           {/* Logo Brand */}
           <Link to="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
             <img
@@ -65,7 +70,7 @@ export function AppLayout() {
           </Link>
 
           {/* Main Navigation Links */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className={`hidden shrink-0 items-center gap-1 whitespace-nowrap ${desktopHeader}`}>
             {navLinks.map((n) =>
               n.action ? (
                 <button
@@ -95,7 +100,7 @@ export function AppLayout() {
           </nav>
 
           {/* Right Action Bar: [Language] + [Theme] + [Admin Portal] + [Bắt đầu phân tích] + [User Chip] */}
-          <div className="hidden items-center gap-2.5 md:flex">
+          <div className={`hidden shrink-0 items-center gap-2 whitespace-nowrap ${desktopHeader}`}>
             {/* Language Switcher */}
             <button
               type="button"
@@ -118,9 +123,9 @@ export function AppLayout() {
               <span>{theme === "dark" ? t("darkTheme") : t("lightTheme")}</span>
             </button>
 
-            {user?.role === "ADMIN" && (
+            {isAdmin && (
               <a
-                href={import.meta.env.VITE_ADMIN_PORTAL_URL || "http://localhost:5175"}
+                href={adminPortalUrl}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/40 px-3 py-1.5 text-xs font-bold text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 border border-purple-200 dark:border-purple-800 transition shadow-xs"
@@ -135,7 +140,7 @@ export function AppLayout() {
             <button
               type="button"
               onClick={() => setIsAnalysisModalOpen(true)}
-              className="btn-cyan-glow shimmer-sweep"
+              className="btn-cyan-glow shimmer-sweep whitespace-nowrap"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -189,7 +194,7 @@ export function AppLayout() {
           </div>
 
           {/* Mobile buttons: Language + Theme + Analysis + Hamburger */}
-          <div className="flex items-center gap-1.5 md:hidden">
+          <div className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap ${compactHeader}`}>
             <button
               type="button"
               onClick={toggleLang}
@@ -226,7 +231,7 @@ export function AppLayout() {
 
         {/* Mobile Dropdown Menu */}
         {open && (
-          <nav className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] px-4 py-3 md:hidden space-y-2">
+          <nav className={`border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#090d16] px-4 py-3 space-y-2 ${compactHeader}`}>
             {navLinks.map((n) =>
               n.action ? (
                 <button
@@ -258,6 +263,17 @@ export function AppLayout() {
               )
             )}
             <div className="border-t border-slate-100 dark:border-slate-800 pt-2 space-y-1">
+              {isAdmin && (
+                <a
+                  href={adminPortalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setOpen(false)}
+                  className="block rounded-lg px-3 py-2 text-sm font-semibold text-purple-700 hover:bg-purple-50 dark:text-purple-300 dark:hover:bg-purple-950/40"
+                >
+                  {t("adminPortal")}
+                </a>
+              )}
               <Link
                 to="/profile"
                 onClick={() => setOpen(false)}

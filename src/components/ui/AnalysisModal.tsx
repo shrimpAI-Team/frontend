@@ -1,32 +1,34 @@
 import { useState, useRef, useEffect } from "react";
 import { Spinner } from "./Spinner";
+import { ShellColorPicker } from "./ShellColorPicker";
 import logoImg from "../../assets/Logo.png";
 import {
   shrimpApi,
-  type SizeMetrics,
   type ColorAnalysis,
-  type UniformityMetrics,
   type AbnormalityMetrics,
+  type AngleGuidance,
 } from "../../api/shrimp.api";
 import { apiError } from "../../lib/api";
 import { useI18nStore } from "../../store/i18n.store";
 
 interface AnalysisResult {
+  imageContentStatus?: 'shrimp' | 'no_shrimp' | 'uncertain' | 'unverified';
+  identificationStatus?: 'identified' | 'uncertain' | 'no_shrimp';
+  candidateSpecies?: string;
+  classificationThreshold?: number;
   species: string;
   scientificName: string;
   confidence: number;
   healthStatus: string;
-  estimatedSize: string;
   commercialGrade: string;
   processingTime: string;
   imageDimensions: string;
   notes: string;
   modelStatus?: string;
   alerts?: string[];
-  sizeMetrics?: SizeMetrics;
   colorAnalysis?: ColorAnalysis;
-  uniformity?: UniformityMetrics;
   abnormalities?: AbnormalityMetrics;
+  angleGuidance?: AngleGuidance;
 }
 
 interface AnalysisModalProps {
@@ -223,28 +225,26 @@ export function AnalysisModal({
       window.dispatchEvent(new CustomEvent("shrimp:analyzed", { detail: data }));
 
       setResult({
+        identificationStatus: data.identificationStatus,
+        imageContentStatus: data.imageContentStatus,
+        candidateSpecies: data.candidateSpecies,
+        classificationThreshold: data.classificationThreshold,
         species: data.species,
         scientificName: data.scientificName,
         confidence: data.confidence,
-        healthStatus:
-          data.abnormalities?.healthSummary ||
-          (data.abnormalDetected
-            ? "Cần lưu ý: Phát hiện dấu hiệu bất thường"
-            : "Tốt (Vỏ sáng bóng, phụ bộ nguyên vẹn)"),
-        estimatedSize: data.sizeEstimate || "30 con/kg",
-        commercialGrade: data.commercialGrade || "Loại 1 (Thương phẩm)",
-        processingTime: data.processingTime || "0.25 giây",
+        healthStatus: data.healthStatus || data.abnormalities?.healthSummary || "Chưa đánh giá",
+        commercialGrade: data.commercialGrade || "Chưa đánh giá",
+        processingTime: data.processingTime || "--",
         imageDimensions:
           data.imageDimensions || `${(fileToSend.size / 1024).toFixed(0)} KB`,
         notes:
           data.description ||
-          "Mô hình Deep Learning AI Vision phân tích chính xác dựa trên hình thái và phân bổ sắc tố.",
+          "Kết quả phân loại loại tôm.",
         modelStatus: data.modelStatus,
         alerts: data.alerts,
-        sizeMetrics: data.sizeMetrics,
         colorAnalysis: data.colorAnalysis,
-        uniformity: data.uniformity,
         abnormalities: data.abnormalities,
+        angleGuidance: data.angleGuidance,
       });
     } catch (err: unknown) {
       setAnalysisError(
@@ -464,10 +464,10 @@ export function AnalysisModal({
                     <div className="rounded-2xl bg-slate-900/95 px-6 py-4 text-center text-white backdrop-blur shadow-2xl border border-cyan-500/40 animate-pulse">
                       <Spinner className="h-7 w-7 text-cyan-400 mx-auto mb-2 animate-spin" />
                       <p className="text-xs font-bold text-cyan-300">
-                        Đang phân tích Loài, Kích thước, Màu sắc & Bệnh lý...
+                        Đang phân tích loài, màu sắc và dấu hiệu bệnh lý...
                       </p>
                       <p className="text-[10px] text-slate-400 mt-1">
-                        YOLOv8 Classifier + OpenCV Morphometrics
+                        YOLOv8 Classifier
                       </p>
                     </div>
                   </div>
@@ -510,9 +510,9 @@ export function AnalysisModal({
                   <div>
                     <div className="flex flex-wrap items-center gap-1.5">
                       <span className="inline-flex items-center gap-1 rounded-full bg-cyan-100 dark:bg-cyan-950/60 px-2.5 py-0.5 text-[10px] font-bold text-cyan-800 dark:text-cyan-300">
-                        ✓ {t("resultTitle")}
+                        {result.identificationStatus === 'no_shrimp' ? 'Ảnh ngoài phạm vi' : result.identificationStatus === 'uncertain' ? 'Chưa xác định' : t('resultTitle')}
                       </span>
-                      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300">
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-950/60 px-2 py-0.5 text-[10px] font-bold text-slate-800 dark:text-slate-300">
                         {result.commercialGrade}
                       </span>
                     </div>
@@ -523,107 +523,148 @@ export function AnalysisModal({
                       ({result.scientificName})
                     </p>
                   </div>
-                  <div className="text-right">
+                  {result.imageContentStatus === "shrimp" && <div className="text-right">
                     <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                      Độ tin cậy AI
+                      {result.identificationStatus === 'uncertain' ? 'Điểm gợi ý' : 'Độ tin cậy phân loại'}
                     </span>
                     <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
                       {result.confidence}%
                     </p>
-                  </div>
+                  </div>}
                 </div>
 
-                <div className="mt-3">
+                {result.imageContentStatus === "shrimp" && <div className="mt-3">
                   <div className="h-2 w-full rounded-full bg-cyan-100 dark:bg-cyan-950 overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full transition-all duration-700"
                       style={{ width: `${result.confidence}%` }}
                     />
                   </div>
-                </div>
+                </div>}
               </div>
 
-              {/* 4-Criteria Grid (Kích thước, Màu sắc, Độ đồng đều, Bệnh lý) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {/* 1. Kích thước & Khối lượng */}
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
-                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
-                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                      📏 Kích thước & Khối lượng
-                    </span>
-                    <span className="rounded bg-sky-100 dark:bg-sky-950/60 text-sky-800 dark:text-sky-300 text-[10px] font-bold px-1.5 py-0.5">
-                      {result.sizeMetrics?.sizeCategory || "Đạt chuẩn"}
-                    </span>
+              {/* Angle & Photography Guidance Banner (Cảnh báo & hướng dẫn góc chụp khi độ tin cậy < 80%) */}
+              {result.imageContentStatus === "shrimp" && (result.identificationStatus === "uncertain" || result.angleGuidance?.needsReshoot) && (
+                <div className="rounded-2xl border-2 border-amber-400/90 dark:border-amber-600/80 bg-gradient-to-br from-amber-50 via-orange-50/40 to-white dark:from-amber-950/40 dark:via-slate-900 dark:to-slate-900 p-4 shadow-xs animate-fade-in space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white flex items-center justify-center text-xl shadow-xs">
+                      📸
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200">
+                          ⚠️ Chưa đủ độ tin cậy để kết luận
+                        </span>
+                        <span className="text-[11px] font-bold text-amber-800 dark:text-amber-300">
+                          Độ tin cậy: {result.confidence}% (Ngưỡng nhận diện: ≥ {result.classificationThreshold ?? 80}%)
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-amber-900 dark:text-amber-200 font-medium leading-relaxed">
+                        {result.angleGuidance?.warning ||
+                          "Ảnh chụp có thể bị lật ngửa mặt bụng, thiếu sáng, bóng đổ hoặc bị che khuất đặc điểm hình thái học."}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-400 pt-0.5">
-                    <span>Chiều dài thân:</span>
-                    <strong className="text-slate-800 dark:text-slate-200">
-                      {result.sizeMetrics?.estimatedLengthCm || "13 - 15 cm"}
-                    </strong>
+
+                  {/* 3 Hướng dẫn chụp ảnh chi tiết */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-amber-200/60 dark:border-amber-800/40">
+                    <div className="rounded-xl bg-white/90 dark:bg-slate-800/90 p-2.5 border border-amber-200/70 dark:border-slate-700/60 shadow-2xs">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800 dark:text-slate-100">
+                        <span>📐</span>
+                        <span>Góc vuông 90° lưng</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                        Chụp thẳng từ trên xuống mặt lưng (Dorsal view). Hạn chế chụp lật ngửa mặt bụng.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-white/90 dark:bg-slate-800/90 p-2.5 border border-amber-200/70 dark:border-slate-700/60 shadow-2xs">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800 dark:text-slate-100">
+                        <span>🦐</span>
+                        <span>Tư thế duỗi thẳng</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                        Đặt tôm thẳng hoặc hơi cong nhẹ, duỗi phẳng râu, chân và đuôi để lộ giáp đầu ngực.
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-white/90 dark:bg-slate-800/90 p-2.5 border border-amber-200/70 dark:border-slate-700/60 shadow-2xs">
+                      <div className="flex items-center gap-1.5 font-bold text-xs text-slate-800 dark:text-slate-100">
+                        <span>💡</span>
+                        <span>Nền sáng & Đủ đèn</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 leading-snug">
+                        Đặt trên khay đơn sắc màu trắng hoặc xanh nhạt. Chiếu sáng đều, tránh lóa nước.
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                    <span>Khối lượng ước tính:</span>
-                    <strong className="text-slate-800 dark:text-slate-200">
-                      {result.sizeMetrics?.estimatedWeightGram || "22.5 g/con"}
-                    </strong>
-                  </div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
-                    <span>Quy đổi số con/kg:</span>
-                    <strong className="text-cyan-700 dark:text-cyan-400">
-                      {result.sizeMetrics?.countPerKgEstimate || result.estimatedSize}
-                    </strong>
+
+                  <div className="flex justify-end pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setResult(null);
+                        setSelectedImage(null);
+                        setSelectedFile(null);
+                        setSelectedFileName("");
+                        setAnalysisError(null);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-100 bg-amber-200/80 hover:bg-amber-300 dark:bg-amber-900/80 dark:hover:bg-amber-800 px-3 py-1.5 rounded-lg transition cursor-pointer"
+                    >
+                      🔄 Chụp lại theo hướng dẫn
+                    </button>
                   </div>
                 </div>
+              )}
 
-                {/* 2. Sắc tố & Màu sắc vỏ */}
+              {result.imageContentStatus !== "shrimp" && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
+                  <p className="font-semibold">{result.identificationStatus === 'no_shrimp' ? 'Không phát hiện tôm trong ảnh.' : 'Chưa xác định ảnh có tôm hay không.'}</p>
+                  <p className="mt-1">Vui lòng chọn ảnh có tôm nhìn rõ. Ảnh này chưa được phân loại và không được lưu vào lịch sử phân tích tôm.</p>
+                </div>
+              )}
+
+              {/* Shell color */}
+              {result.imageContentStatus === "shrimp" && <div className="text-xs">
+                {/* Sắc tố & Màu sắc vỏ */}
                 <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
                   <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
                     <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       🎨 Sắc tố & Màu vỏ
                     </span>
                     <span className="rounded bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-1.5 py-0.5">
-                      {result.colorAnalysis?.glossiness || "Sáng bóng"}
+                      {result.colorAnalysis?.assessed ? "Màu trong ảnh · Thử nghiệm" : "Chưa đánh giá"}
                     </span>
                   </div>
                   <div className="text-slate-600 dark:text-slate-400 pt-0.5">
                     <span className="block text-[11px] text-slate-500">Màu sắc chủ đạo:</span>
                     <strong className="text-slate-800 dark:text-slate-200 text-[11px]">
-                      {result.colorAnalysis?.dominantColor || "Sắc tố tự nhiên đồng đều"}
+                      {result.colorAnalysis?.assessed ? result.colorAnalysis.dominantColor : "Chưa đánh giá"}
                     </strong>
                   </div>
                   <div className="flex justify-between text-slate-600 dark:text-slate-400">
                     <span>Độ trong suốt:</span>
                     <strong className="text-slate-800 dark:text-slate-200">
-                      {result.colorAnalysis?.shellTransparency || "Trong suốt tự nhiên"}
+                      Chưa đánh giá
                     </strong>
                   </div>
                 </div>
 
-                {/* 3. Mức độ đồng đều */}
-                <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 p-3.5 space-y-1.5 shadow-2xs">
-                  <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-slate-800 pb-1.5">
-                    <span className="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-                      ⚖️ Độ đồng đều mẻ tôm
-                    </span>
-                    <span className="rounded bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold px-1.5 py-0.5">
-                      {result.uniformity?.uniformityRate || "95.0%"}
-                    </span>
+                {result.colorAnalysis?.description && (
+                  <p className="text-[11px] text-slate-500 col-span-full">🎨 {result.colorAnalysis.description}</p>
+                )}
+                {selectedImage && result.colorAnalysis?.bodyPolygon && <div className="col-span-full space-y-2">
+                  <p className="text-sm font-semibold">Vùng thân tự động · Thử nghiệm</p>
+                  <p className="text-xs text-slate-500">{result.colorAnalysis.method === 'simple_background_experimental' ? 'Tách vùng nổi bật trên nền đơn giản; cần kiểm tra vùng xanh có đúng thân tôm.' : 'Mask thân do model dự đoán; hãy kiểm tra vùng xanh trước khi sử dụng màu.'}</p>
+                  <div className="relative">
+                    <img src={selectedImage} alt="Ảnh với vùng thân tự động" className="block w-full" />
+                    <svg viewBox="0 0 1 1" preserveAspectRatio="none" className="absolute inset-0 w-full h-full pointer-events-none">
+                      <polygon points={result.colorAnalysis.bodyPolygon.map(p => p.join(',')).join(' ')} fill="rgba(0,220,100,.25)" stroke="#00bb66" strokeWidth=".005" />
+                    </svg>
                   </div>
-                  <div className="flex justify-between text-slate-600 dark:text-slate-400 pt-0.5">
-                    <span>Số lượng phát hiện:</span>
-                    <strong className="text-slate-800 dark:text-slate-200">
-                      {result.uniformity?.shrimpCount || 1} cá thể
-                    </strong>
-                  </div>
-                  <div className="text-slate-600 dark:text-slate-400">
-                    <span className="block text-[11px] text-slate-500">Đánh giá phân cỡ:</span>
-                    <strong className="text-slate-800 dark:text-slate-200 text-[11px]">
-                      {result.uniformity?.rating || "Cân đối hình thái học chuẩn"}
-                    </strong>
-                  </div>
-                </div>
-
-                {/* 4. Dấu hiệu bất thường & Dịch bệnh */}
+                </div>}
+                {selectedImage && <ShellColorPicker key={selectedImage} image={selectedImage} />}
+                {/* Dấu hiệu bất thường & Dịch bệnh */}
                 <div className={`rounded-2xl border p-3.5 space-y-1.5 shadow-2xs ${
                   result.alerts && result.alerts.length > 0
                     ? "border-amber-300 bg-amber-50/60 dark:border-amber-900/50 dark:bg-amber-950/30"
@@ -636,9 +677,9 @@ export function AnalysisModal({
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                       result.alerts && result.alerts.length > 0
                         ? "bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200"
-                        : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                        : "bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-300"
                     }`}>
-                      {result.alerts && result.alerts.length > 0 ? "Cần lưu ý" : "✓ Khỏe mạnh"}
+                      {result.abnormalities?.assessed ? "Thử nghiệm" : "Chưa đánh giá"}
                     </span>
                   </div>
                   <div className="text-[11px] space-y-0.5 pt-0.5">
@@ -652,10 +693,16 @@ export function AnalysisModal({
                     ))}
                   </div>
                 </div>
-              </div>
+              </div>}
+
+              {result.imageContentStatus === "shrimp" && result.identificationStatus === "uncertain" && result.candidateSpecies && (
+                <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+                  Gợi ý: {result.candidateSpecies} ({result.confidence}%). Đây chưa phải kết luận nhận diện.
+                </p>
+              )}
 
               {/* Alert Warning Box (nếu phát hiện bệnh lý/dấu hiệu bất thường) */}
-              {result.alerts && result.alerts.length > 0 && (
+              {!result.abnormalities?.assessed && result.alerts && result.alerts.length > 0 && (
                 <div className="rounded-2xl border border-amber-300 dark:border-amber-800 bg-amber-50/90 dark:bg-amber-950/40 p-3.5 text-xs text-amber-900 dark:text-amber-200 space-y-1 shadow-xs">
                   <p className="font-bold flex items-center gap-1.5 text-amber-950 dark:text-amber-300">
                     ⚠️ Cảnh báo kiểm định chất lượng:
@@ -688,7 +735,7 @@ export function AnalysisModal({
                   onClick={onClose}
                   className="flex-1 rounded-xl bg-gradient-to-r from-cyan-600 to-teal-600 py-2.5 text-xs font-bold text-white hover:from-cyan-700 hover:to-teal-700 shadow-sm transition cursor-pointer"
                 >
-                  ✓ Hoàn tất kiểm định
+                  Đóng kết quả
                 </button>
               </div>
             </div>

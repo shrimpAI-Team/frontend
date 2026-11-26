@@ -9,6 +9,7 @@ export const translations = {
     analysis: "Phân tích tôm",
     techConsulting: "Tư vấn kỹ thuật",
     history: "Lịch sử",
+    ponds: "Quản lý ao",
     about: "Giới thiệu",
     admin: "Quản trị",
     startAnalysis: "Bắt đầu phân tích",
@@ -179,7 +180,7 @@ export const translations = {
     aboutHeroBadge: "TỔNG QUAN HỆ THỐNG • shrimpAI VISION PLATFORM",
     aboutHeroTitle: "Hệ thống nhận dạng & phân loại tôm bằng xử lý ảnh và Trí tuệ nhân tạo (AI)",
     aboutHeroSubtitle:
-      "Giải pháp công nghệ thị giác máy tính hỗ trợ người nuôi tôm, trang trại và cơ sở thu mua nhận diện giống tôm, đo kích thước, đánh giá độ đồng đều và cảnh báo bất thường nhanh chóng qua ảnh chụp từ điện thoại hoặc camera.",
+      "Giải pháp công nghệ thị giác máy tính hỗ trợ người nuôi tôm, trang trại và cơ sở thu mua nhận diện giống tôm, đo kích thước, và cảnh báo bất thường nhanh chóng qua ảnh chụp từ điện thoại hoặc camera.",
     aboutExploreBtn: "Trải nghiệm phân tích tôm",
     aboutBackHome: "Về Trang chủ",
     aboutProjectSignificance: "Ý NGHĨA DỰ ÁN",
@@ -187,7 +188,7 @@ export const translations = {
     aboutSignificanceP1:
       "Trong nuôi tôm truyền thống, việc kiểm tra kích cỡ, đánh giá thể trạng và phân loại tôm thường thực hiện thủ công bằng mắt thường hoặc bắt mẫu cân đo. Phương pháp này không chỉ tốn nhiều công sức mà còn dễ gây trầy xước, sốc cho tôm và phụ thuộc lớn vào cảm quan chủ quan.",
     aboutSignificanceQuote:
-      '"Đề tài nhằm xây dựng hệ thống phần mềm hỗ trợ nhận dạng và phân loại tôm thông qua hình ảnh chụp từ điện thoại hoặc camera. Sử dụng kỹ thuật xử lý ảnh và AI để nhận diện đối tượng tôm, hỗ trợ phân loại theo loại tôm, kích thước, màu sắc, mức độ đồng đều hoặc một số dấu hiệu bất thường bên ngoài."',
+      '"Đề tài nhằm xây dựng hệ thống phần mềm hỗ trợ nhận dạng và phân loại tôm thông qua hình ảnh chụp từ điện thoại hoặc camera. Sử dụng kỹ thuật xử lý ảnh và AI để nhận diện đối tượng tôm, hỗ trợ phân loại theo loại tôm, kích thước, màu sắc hoặc một số dấu hiệu bất thường bên ngoài."',
     aboutSignificanceAuthor: "— Nghiên cứu & phát triển shrimpAI",
     aboutSignificanceP2:
       "Kết quả phân tích được lưu trữ an toàn vào cơ sở dữ liệu và hiển thị trực quan trên giao diện Web App / Mobile App, giúp người quản lý ao dễ dàng theo dõi, thống kê và đưa ra quyết định kịp thời cho từng đợt thu hoạch.",
@@ -278,10 +279,6 @@ export const translations = {
     crit3Detail: "Kiểm tra màu sắc vỏ tôm, độ trong suốt cơ thịt, phát hiện các hiện tượng sắc tố bất thường như đỏ thân, đốm đen sẹo vỏ.",
     crit3Status: "Phân tích RGB/HSV",
 
-    crit4Name: "Độ đồng đều đàn tôm",
-    crit4Detail: "Tính toán hệ số phân tán kích thước (CV%) trong cùng một mẻ chụp mẫu, phát hiện sớm tình trạng phân đàn trong ao nuôi.",
-    crit4Status: "Đánh giá mẫu đa điểm",
-    crit4Conf: "Độ nhạy cao",
 
     crit5Name: "Tỷ lệ chuẩn thương phẩm",
     crit5Detail: "Tổng hợp tỷ lệ tôm Loại 1, Loại 2 và loại dạt; tự động kích hoạt cảnh báo nếu tỷ lệ không đạt vượt quá giới hạn thiết lập.",
@@ -298,7 +295,7 @@ export const translations = {
     app1Tag: "Giám sát ao nuôi",
 
     app2Title: "Cơ sở sản xuất tôm giống",
-    app2Desc: "Đánh giá nhanh độ đồng đều của đàn postlarvae, sàng lọc tôm giống đạt chuẩn chất lượng cao trước khi xuất bán cho người nuôi.",
+    app2Desc: "Hỗ trợ nhận diện giống tôm qua ảnh tại cơ sở sản xuất tôm giống.",
     app2Tag: "Tuyển chọn giống",
 
     app3Title: "Hợp tác xã thủy sản",
@@ -317,6 +314,10 @@ export const translations = {
 
     // History Page
     historyPageTitle: "Lịch sử Giám định & Huấn luyện",
+    historyPageSummary: "Trang {page} / {pages} (Tổng số {total} mẫu)",
+    historyImagesPerPage: "Ảnh mỗi trang",
+    historyPagination: "Phân trang lịch sử",
+    historyPageNumber: "Trang",
     historyPageSubtitle: "Quản lý toàn bộ hình ảnh và kết quả phân tích AI đã thực hiện",
     totalScans: "Tổng số mẫu đã phân tích",
     healthySamples: "Mẫu khỏe mạnh",
@@ -356,6 +357,7 @@ export const translations = {
     analysis: "Shrimp Analysis",
     techConsulting: "Technical Advisory",
     history: "History",
+    ponds: "Ponds",
     about: "About Us",
     admin: "Admin",
     startAnalysis: "Start Analysis",
@@ -528,7 +530,7 @@ export const translations = {
     aboutHeroTitle:
       "Shrimp Recognition & Classification via Computer Vision and Artificial Intelligence",
     aboutHeroSubtitle:
-      "A next-generation computer vision solution empowering shrimp farmers, hatcheries, and aquaculture processors to identify breeds, measure sizes, evaluate uniformity, and detect anomalies rapidly using mobile photos or pond cameras.",
+      "A next-generation computer vision solution empowering shrimp farmers, hatcheries, and aquaculture processors to identify breeds, measure sizes, and detect anomalies rapidly using mobile photos or pond cameras.",
     aboutExploreBtn: "Try Shrimp Analysis",
     aboutBackHome: "Back to Home",
     aboutProjectSignificance: "PROJECT SIGNIFICANCE",
@@ -536,7 +538,7 @@ export const translations = {
     aboutSignificanceP1:
       "In traditional shrimp farming, sizing, condition assessment, and sorting are performed manually by eye or sampling. This is labor-intensive, causes stress or injury to the shrimp, and heavily relies on subjective human judgment.",
     aboutSignificanceQuote:
-      '"The project builds an AI software platform to recognize and classify shrimp through photos taken by smartphones or cameras. Applying computer vision techniques and deep learning to identify specimens, size distribution, shell coloration, uniformity, and health anomalies."',
+      '"The project builds an AI software platform to recognize and classify shrimp through photos taken by smartphones or cameras. Applying computer vision techniques and deep learning to identify specimens, size distribution, shell coloration and health anomalies."',
     aboutSignificanceAuthor: "— shrimpAI Research & Development",
     aboutSignificanceP2:
       "Analysis telemetry is securely stored in a centralized database and displayed across Web and Mobile applications, allowing pond managers to monitor growth curves and make data-driven harvest decisions.",
@@ -627,10 +629,6 @@ export const translations = {
     crit3Detail: "Evaluates shell color patterns, abdominal translucency, and screens for pigmentation abnormalities like red disease or melanosis scars.",
     crit3Status: "RGB/HSV Spectral Analysis",
 
-    crit4Name: "Batch Uniformity",
-    crit4Detail: "Calculates size dispersion coefficient (CV%) within a sampled batch, giving early warning of growth disparities in the pond.",
-    crit4Status: "Multi-point sample evaluation",
-    crit4Conf: "High Sensitivity",
 
     crit5Name: "Commercial Grade Ratio",
     crit5Detail: "Summarizes ratios of Grade 1, Grade 2, and culls; automatically triggers alerts if substandard counts exceed safety thresholds.",
@@ -647,7 +645,7 @@ export const translations = {
     app1Tag: "Pond Monitoring",
 
     app2Title: "Hatcheries & Breeding Centers",
-    app2Desc: "Rapidly evaluates postlarvae batch uniformity and screens high-standard seedstock before dispatching to farmers.",
+    app2Desc: "Helps hatcheries identify shrimp groups from photos.",
     app2Tag: "Seedstock Screening",
 
     app3Title: "Aquaculture Cooperatives",
@@ -666,6 +664,10 @@ export const translations = {
 
     // History Page
     historyPageTitle: "Inspection & Training History",
+    historyPageSummary: "Page {page} / {pages} ({total} samples total)",
+    historyImagesPerPage: "Images per page",
+    historyPagination: "History pagination",
+    historyPageNumber: "Page",
     historyPageSubtitle: "Manage all analyzed shrimp images and AI diagnostic records",
     totalScans: "Total Inspected Samples",
     healthySamples: "Healthy Samples",

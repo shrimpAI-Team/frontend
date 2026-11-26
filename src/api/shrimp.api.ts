@@ -9,6 +9,11 @@ export interface SizeMetrics {
 }
 
 export interface ColorAnalysis {
+  bodyPolygon?: number[][];
+  method?: string;
+  assessed?: boolean;
+  status?: string;
+  dominantHex?: string;
   dominantColor: string;
   shellTransparency: string;
   glossiness?: string;
@@ -23,6 +28,7 @@ export interface UniformityMetrics {
 }
 
 export interface AbnormalityMetrics {
+  assessed?: boolean;
   abnormalDetected: boolean;
   healthSummary: string;
   alerts: string[];
@@ -30,9 +36,28 @@ export interface AbnormalityMetrics {
   whiteSpotsDetected?: boolean;
   blackGillsDetected?: boolean;
   muscleOpacityDetected?: boolean;
+  milkyDiseaseDetected?: boolean;
+}
+
+export interface AngleInstruction {
+  title: string;
+  desc: string;
+  icon: string;
+}
+
+export interface AngleGuidance {
+  needsReshoot: boolean;
+  confidence: number;
+  threshold: number;
+  warning: string;
+  instructions: AngleInstruction[];
 }
 
 export interface ShrimpAnalysisResponse {
+  imageContentStatus?: 'shrimp' | 'no_shrimp' | 'uncertain' | 'unverified';
+  identificationStatus?: 'identified' | 'uncertain' | 'no_shrimp';
+  candidateSpecies?: string;
+  classificationThreshold?: number;
   id?: string;
   imageUrl?: string;
   originalName?: string;
@@ -55,6 +80,7 @@ export interface ShrimpAnalysisResponse {
   colorAnalysis?: ColorAnalysis;
   uniformity?: UniformityMetrics;
   abnormalities?: AbnormalityMetrics;
+  angleGuidance?: AngleGuidance;
 }
 
 export interface SupportedSpecies {
