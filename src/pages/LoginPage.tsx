@@ -180,7 +180,7 @@ export default function LoginPage() {
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
       </div>
 
-      {/* Social Login Buttons: Google, Facebook, Zalo */}
+      {/* Social Login Buttons: Google, Facebook */}
       <OAuthButtons disabled={loading} />
     </AuthLayout>
   );

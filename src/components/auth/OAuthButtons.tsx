@@ -4,7 +4,7 @@ import { authApi } from "../../api/auth.api";
 export function OAuthButtons({ disabled }: { disabled?: boolean }) {
   const [clicked, setClicked] = useState(false);
 
-  const go = (p: "google" | "facebook" | "zalo") => {
+  const go = (p: "google" | "facebook") => {
     if (clicked || disabled) return;
     setClicked(true);
     window.location.href = authApi.oauthUrl(p);
@@ -13,7 +13,7 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
   const isDisabled = disabled || clicked;
 
   return (
-    <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
       {/* Google */}
       <button
         type="button"
@@ -66,28 +66,6 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
           />
         </svg>
         <span>Facebook</span>
-      </button>
-
-      {/* Zalo */}
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={() => go("zalo")}
-        className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
-        title="Đăng nhập bằng Zalo"
-      >
-        <svg
-          viewBox="0 0 48 48"
-          className="h-4.5 w-4.5 shrink-0"
-          aria-hidden="true"
-        >
-          <rect width="48" height="48" rx="10" fill="#0068FF" />
-          <path
-            fill="#FFFFFF"
-            d="M12.5 15h9.8v3.1l-6 8.3h6.5v3.6h-11v-3.1l6-8.3h-5.3V15zm11.5 5.8c0-1.8 1.4-3.1 3.2-3.1 1.8 0 3.2 1.3 3.2 3.1v8.8h-3v-1.2c-.6.9-1.6 1.4-2.7 1.4-2.1 0-3.7-1.6-3.7-3.9 0-2.3 1.6-3.9 3.7-3.9 1.1 0 2.1.5 2.7 1.4v-2.6h-.4c-.9 0-1.7-.3-2.1-.8-.4-.5-.6-1.2-.6-2.1l-.3-.1zm3.4 4.8c-1.1 0-1.9.8-1.9 1.9s.8 1.9 1.9 1.9 1.9-.8 1.9-1.9-.8-1.9-1.9-1.9zm7.3-8.6h3.1v15h-3.1V17zm7.5 4.5c2.4 0 4.1 1.8 4.1 4.3s-1.7 4.3-4.1 4.3-4.1-1.8-4.1-4.3 1.7-4.3 4.1-4.3zm0 2.6c-1.1 0-1.9.8-1.9 1.7 0 .9.8 1.7 1.9 1.7s1.9-.8 1.9-1.7c0-.9-.8-1.7-1.9-1.7z"
-          />
-        </svg>
-        <span>Zalo</span>
       </button>
     </div>
   );
