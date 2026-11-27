@@ -1,16 +1,23 @@
+import { useState } from "react";
 import { authApi } from "../../api/auth.api";
 
 export function OAuthButtons({ disabled }: { disabled?: boolean }) {
+  const [clicked, setClicked] = useState(false);
+
   const go = (p: "google" | "facebook" | "zalo") => {
+    if (clicked || disabled) return;
+    setClicked(true);
     window.location.href = authApi.oauthUrl(p);
   };
+
+  const isDisabled = disabled || clicked;
 
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
       {/* Google */}
       <button
         type="button"
-        disabled={disabled}
+        disabled={isDisabled}
         onClick={() => go("google")}
         className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Google"
@@ -43,7 +50,7 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
       {/* Facebook */}
       <button
         type="button"
-        disabled={disabled}
+        disabled={isDisabled}
         onClick={() => go("facebook")}
         className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Facebook"
@@ -64,7 +71,7 @@ export function OAuthButtons({ disabled }: { disabled?: boolean }) {
       {/* Zalo */}
       <button
         type="button"
-        disabled={disabled}
+        disabled={isDisabled}
         onClick={() => go("zalo")}
         className="h-11 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900/90 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer disabled:opacity-50"
         title="Đăng nhập bằng Zalo"
